@@ -9,8 +9,8 @@ namespace RepositoryLayer.Context
     public class BookStoreDBContext : DbContext
     {
         public BookStoreDBContext(DbContextOptions option) : base(option) { }
-        DbSet<UserEntity> Users { get; set; }
-        DbSet<AdminEntity> Admins { get; set; }
+       public DbSet<UserEntity> Users { get; set; }
+       public DbSet<AdminEntity> Admins { get; set; }
 
 
     }

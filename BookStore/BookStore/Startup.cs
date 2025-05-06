@@ -13,6 +13,12 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using RepositoryLayer.Context;
 using RepositoryLayer.Entity;
+using RepositoryLayer.Interface;
+using RepositoryLayer.Service;
+using ManagerLayer.Service;
+using ManagerLayer.Interface;
+using Microsoft.OpenApi.Models;
+
 
 
 
@@ -33,7 +39,55 @@ namespace BookStore
             services.AddControllers();
             services.AddDbContext<BookStoreDBContext>(options =>
                 options.UseSqlServer(Configuration["ConnectionStrings:DBConn"]));
+
+            // Register DI
+            services.AddTransient<IUserRepo, UserRepo>();
+            services.AddTransient<IUserManager, UserManager>();
+
+
+            //Swagger for API Documentation
+            services.AddSwaggerGen(
+                option =>
+                {
+                    option.SwaggerDoc("v1", new OpenApiInfo { Title = "Fundo API", Version = "v1" });
+                    option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                    {
+                        In = ParameterLocation.Header,
+                        Description = "Please enter the valid token",
+                        Name = "Authorization",
+                        Type = SecuritySchemeType.Http,
+                        BearerFormat = "JWT",
+                        Scheme = "Bearer"
+
+                    });
+
+                    option.AddSecurityRequirement(new OpenApiSecurityRequirement
+                    {
+                      {
+                          new OpenApiSecurityScheme
+                          {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+
+                          },
+
+                        new string[]{ }
+
+                       }
+                    });
+                });
+
         }
+
+
+
+
+
+
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -47,7 +101,17 @@ namespace BookStore
 
             app.UseRouting();
 
+
+            app.UseAuthentication();
             app.UseAuthorization();
+
+
+            app.UseSwagger();
+            // This middleware serves the Swagger documentation UI
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Employee API V1");
+            });
 
             app.UseEndpoints(endpoints =>
             {
