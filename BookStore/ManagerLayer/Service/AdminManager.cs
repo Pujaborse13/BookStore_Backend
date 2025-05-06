@@ -17,14 +17,12 @@ namespace ManagerLayer.Service
     {
         private readonly IAdminRepo adminRepo;
         private readonly IConfiguration configuration;
-        private readonly IJwtTokenManager jwtTokenManager;
 
 
-        public AdminManager(IAdminRepo adminRepo, IConfiguration configuration, IJwtTokenManager jwtTokenManager)
+        public AdminManager(IAdminRepo adminRepo, IConfiguration configuration)
         {
             this.adminRepo = adminRepo;
             this.configuration = configuration;
-            this.jwtTokenManager = jwtTokenManager;
         }
 
 
@@ -39,19 +37,37 @@ namespace ManagerLayer.Service
         }
 
 
-
-
         public string Login(LoginModel model)
         {
             var user = adminRepo.Login(model);
             if (user != null)
             {
-                return jwtTokenManager.GenerateToken(user.Email, user.UserId, user.Role);
+                return GenerateToken(user.Email, user.UserId, user.Role);
             }
             return null;
         }
 
 
-        
+        public string GenerateToken(string email, int userId, string role)
+        {
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+            var claims = new[]
+            {
+                new Claim("EmailID",email),
+                new Claim("UserID",userId.ToString()),
+                //new  Claim(ClaimTypes.Role, role),
+                new Claim("role", role)
+            };
+
+            var token = new JwtSecurityToken(configuration["Jwt:Issuer"],
+                configuration["Jwt:Audience"],
+                claims,
+                expires: DateTime.Now.AddHours(2),
+                signingCredentials: credentials);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
     }
+
 }

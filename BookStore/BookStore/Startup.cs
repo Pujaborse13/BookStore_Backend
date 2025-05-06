@@ -44,19 +44,13 @@ namespace BookStore
             services.AddTransient<IUserRepo, UserRepo>();
             services.AddTransient<IUserManager, UserManager>();
 
-<<<<<<< Updated upstream
-=======
+
 
             services.AddTransient<IAdminRepo, AdminRepo>();
             services.AddTransient<IAdminManager, AdminManager>();
             
             services.AddTransient<IJwtTokenManager, JwtTokenManager>();
 
-
-
-
-
->>>>>>> Stashed changes
 
             //Swagger for API Documentation
             services.AddSwaggerGen(

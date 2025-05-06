@@ -27,7 +27,7 @@ namespace ManagerLayer.Service
         }
 
 
-        public UserEntity Register(UserRegistrationModel model)
+        public UserEntity Register(RegistrationModel model)
         {
             return userRepo.Register(model);
         }
