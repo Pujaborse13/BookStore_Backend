@@ -9,7 +9,7 @@ namespace ManagerLayer.Interface
     {
         public UserEntity Register(RegistrationModel model);
         public bool CheckEmail(string email);
-        public string Login(LoginModel model);
+        public UserEntity Login(LoginModel model);
 
 
 

@@ -37,19 +37,14 @@ namespace ManagerLayer.Service
             return userRepo.CheckEmail(email);
         }
 
-       
 
-        public string Login(LoginModel model)
+        public UserEntity Login(LoginModel model)
         {
-            var user = userRepo.Login(model);
-            if (user != null)
-            {
-                return jwtTokenManager.GenerateToken(user.Email, user.UserId, user.Role);
-            }
-            return null;
+            return userRepo.Login(model);
         }
 
 
-      
+
+
     }
 }
