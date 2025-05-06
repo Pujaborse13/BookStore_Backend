@@ -24,7 +24,7 @@ namespace BookStore.Controllers
         //httplocal/api/Users/Reg
         [HttpPost]
         [Route("userRegistration")]
-        public IActionResult Register(UserRegistrationModel model)
+        public IActionResult Register(RegistrationModel model)
         {
             var check = userManager.CheckEmail(model.Email);
 
@@ -52,8 +52,7 @@ namespace BookStore.Controllers
 
 
 
-
-        [HttpPost("Login")]
+        [HttpPost("login")]
         public IActionResult Login(LoginModel model)
         {
             var token = userManager.Login(model);

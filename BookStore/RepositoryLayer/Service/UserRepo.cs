@@ -30,7 +30,7 @@ namespace RepositoryLayer.Service
         }
 
 
-        public UserEntity Register(UserRegistrationModel model)
+        public UserEntity Register(RegistrationModel model)
         {
 
             UserEntity user = new UserEntity();

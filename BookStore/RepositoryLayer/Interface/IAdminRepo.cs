@@ -1,18 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using RepositoryLayer.Entity;
 using CommonLayer.Models;
-
+using RepositoryLayer.Entity;
 
 namespace RepositoryLayer.Interface
 {
-    public interface IUserRepo
+    public interface IAdminRepo
     {
-        public UserEntity Register(RegistrationModel model);
+        public AdminEntity Register(RegistrationModel model);
         public bool CheckEmail(string email);
-        public UserEntity Login(LoginModel model);
-
-
     }
 }

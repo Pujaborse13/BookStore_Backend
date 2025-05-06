@@ -44,6 +44,11 @@ namespace BookStore
             services.AddTransient<IUserRepo, UserRepo>();
             services.AddTransient<IUserManager, UserManager>();
 
+            services.AddTransient<IAdminRepo, AdminRepo>();
+            services.AddTransient<IAdminManager, AdminManager>();
+
+
+
 
             //Swagger for API Documentation
             services.AddSwaggerGen(
