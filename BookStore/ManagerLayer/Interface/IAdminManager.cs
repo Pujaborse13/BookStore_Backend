@@ -10,7 +10,7 @@ namespace ManagerLayer.Interface
     {
         public AdminEntity Register(RegistrationModel model);
         public bool CheckEmail(string email);
-        public string Login(LoginModel model);
+        public AdminEntity Login(LoginModel model);
 
     }
 }

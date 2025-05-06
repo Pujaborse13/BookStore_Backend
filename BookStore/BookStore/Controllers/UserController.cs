@@ -62,11 +62,7 @@ namespace BookStore.Controllers
             {
                 string token = jwtTokenManager.GenerateToken(user.Email, user.UserId, user.Role);
 
-                return Ok(new
-                {
-                    Token = token,
-                    Message = "Login successful"
-                });
+                return Ok(new { Token = token,Message = "Login successful" });
             }
 
             return Unauthorized(new { Message = "Invalid credentials" });

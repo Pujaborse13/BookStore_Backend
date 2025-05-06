@@ -46,13 +46,6 @@ namespace BookStore
 
             services.AddTransient<IAdminRepo, AdminRepo>();
             services.AddTransient<IAdminManager, AdminManager>();
-
-
-
-
-
-            services.AddTransient<IAdminRepo, AdminRepo>();
-            services.AddTransient<IAdminManager, AdminManager>();
             
             services.AddTransient<IJwtTokenManager, JwtTokenManager>();
 

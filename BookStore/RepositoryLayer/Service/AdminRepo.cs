@@ -21,7 +21,6 @@ namespace RepositoryLayer.Service
 
         public AdminEntity Register(RegistrationModel model)
         {
-
             AdminEntity admin = new AdminEntity();
 
             admin.FullName = model.FullName;

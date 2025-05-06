@@ -1,5 +1,6 @@
 ﻿using CommonLayer.Models;
 using ManagerLayer.Interface;
+using ManagerLayer.Service;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RepositoryLayer.Entity;
@@ -13,10 +14,12 @@ namespace BookStore.Controllers
     {
 
         private readonly IAdminManager adminManager;
+        private readonly IJwtTokenManager jwtTokenManager;
 
-        public AdminController(IAdminManager adminManager)
+        public AdminController(IAdminManager adminManager, IJwtTokenManager jwtTokenManager)
         {
             this.adminManager = adminManager;
+            this.jwtTokenManager = jwtTokenManager;
         }
 
 
@@ -48,6 +51,28 @@ namespace BookStore.Controllers
 
 
         }
+
+
+        [HttpPost("adminLogin")]
+        public IActionResult Login(LoginModel model)
+        {
+            var user = adminManager.Login(model);
+
+            if (user != null)
+            {
+                string token = jwtTokenManager.GenerateToken(user.Email, user.UserId, user.Role);
+
+                return Ok(new
+                {
+                    Token = token,
+                    Message = "Login successful"
+                });
+            }
+
+            return Unauthorized(new { Message = "Invalid credentials" });
+        }
+
+
 
 
 
