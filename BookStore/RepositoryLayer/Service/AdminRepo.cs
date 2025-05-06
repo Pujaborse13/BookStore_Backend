@@ -39,12 +39,7 @@ namespace RepositoryLayer.Service
         public bool CheckEmail(string email)
         {
             var result = this.context.Admins.FirstOrDefault(x => x.Email == email);
-            if (result == null)
-            {
-                return false;
-            }
-
-            return true;
+            return result != null;
         }
 
         private string EncodePasswordToBase64(string password)

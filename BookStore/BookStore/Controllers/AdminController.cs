@@ -6,6 +6,7 @@ using RepositoryLayer.Entity;
 
 namespace BookStore.Controllers
 {
+
     [Route("api/[controller]")]
     [ApiController]
     public class AdminController : ControllerBase

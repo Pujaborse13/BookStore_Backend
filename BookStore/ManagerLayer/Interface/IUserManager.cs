@@ -10,7 +10,6 @@ namespace ManagerLayer.Interface
         public UserEntity Register(RegistrationModel model);
         public bool CheckEmail(string email);
         public string Login(LoginModel model);
-       public string GenerateToken(string email, int userId, string role);
 
 
 

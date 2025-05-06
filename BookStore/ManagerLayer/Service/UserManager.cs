@@ -16,12 +16,14 @@ namespace ManagerLayer.Service
     {
         private readonly IUserRepo userRepo;
         private readonly IConfiguration configuration;
+        private readonly IJwtTokenManager jwtTokenManager;
 
 
-        public UserManager(IUserRepo userRepo, IConfiguration configuration)
+        public UserManager(IUserRepo userRepo, IConfiguration configuration, IJwtTokenManager jwtTokenManager)
         {
             this.userRepo = userRepo;
             this.configuration = configuration;
+            this.jwtTokenManager = jwtTokenManager;
         }
 
 
@@ -42,31 +44,12 @@ namespace ManagerLayer.Service
             var user = userRepo.Login(model);
             if (user != null)
             {
-                return GenerateToken(user.Email, user.UserId, user.Role);
+                return jwtTokenManager.GenerateToken(user.Email, user.UserId, user.Role);
             }
             return null;
         }
 
 
-        public string GenerateToken(string email, int userId, string role)
-        {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-            var claims = new[]
-            {
-                new Claim("EmailID",email),
-                new Claim("UserID",userId.ToString()),
-                //new  Claim(ClaimTypes.Role, role),
-                new Claim("role", role)
-            };
-
-            var token = new JwtSecurityToken(configuration["Jwt:Issuer"],
-                configuration["Jwt:Audience"],
-                claims,
-                expires: DateTime.Now.AddHours(2),
-                signingCredentials: credentials);
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
+      
     }
 }
