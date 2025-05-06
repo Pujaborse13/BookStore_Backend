@@ -62,5 +62,11 @@ namespace RepositoryLayer.Service
 
             }
         }
+
+        public AdminEntity Login(LoginModel model)
+        {
+            var encodedPassword = EncodePasswordToBase64(model.Password);
+            return context.Admins.FirstOrDefault(x => x.Email == model.Email && x.Password == encodedPassword);
+        }
     }
 }
