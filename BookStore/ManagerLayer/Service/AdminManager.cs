@@ -9,39 +9,41 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using RepositoryLayer.Entity;
 using RepositoryLayer.Interface;
+using RepositoryLayer.Service;
 
 namespace ManagerLayer.Service
 {
-    public  class UserManager :IUserManager
+    public class AdminManager  : IAdminManager
     {
-        private readonly IUserRepo userRepo;
+        private readonly IAdminRepo adminRepo;
         private readonly IConfiguration configuration;
         private readonly IJwtTokenManager jwtTokenManager;
 
 
-        public UserManager(IUserRepo userRepo, IConfiguration configuration, IJwtTokenManager jwtTokenManager)
+        public AdminManager(IAdminRepo adminRepo, IConfiguration configuration, IJwtTokenManager jwtTokenManager)
         {
-            this.userRepo = userRepo;
+            this.adminRepo = adminRepo;
             this.configuration = configuration;
             this.jwtTokenManager = jwtTokenManager;
         }
 
 
-        public UserEntity Register(UserRegistrationModel model)
+        public AdminEntity Register(RegistrationModel model)
         {
-            return userRepo.Register(model);
+            return adminRepo.Register(model);
         }
 
         public bool CheckEmail(string email)
         {
-            return userRepo.CheckEmail(email);
+            return adminRepo.CheckEmail(email);
         }
 
-       
+
+
 
         public string Login(LoginModel model)
         {
-            var user = userRepo.Login(model);
+            var user = adminRepo.Login(model);
             if (user != null)
             {
                 return jwtTokenManager.GenerateToken(user.Email, user.UserId, user.Role);
@@ -50,6 +52,6 @@ namespace ManagerLayer.Service
         }
 
 
-      
+        
     }
 }

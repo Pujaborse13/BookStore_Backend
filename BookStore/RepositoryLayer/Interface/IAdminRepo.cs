@@ -3,16 +3,15 @@ using System.Collections.Generic;
 using System.Text;
 using CommonLayer.Models;
 using RepositoryLayer.Entity;
-namespace ManagerLayer.Interface
+
+namespace RepositoryLayer.Interface
 {
-    public interface IUserManager
+    public interface IAdminRepo
     {
-        public UserEntity Register(UserRegistrationModel model);
+        public AdminEntity Register(RegistrationModel model);
         public bool CheckEmail(string email);
-        public string Login(LoginModel model);
-
-
-
+        public AdminEntity Login(LoginModel model);
 
     }
+
 }
