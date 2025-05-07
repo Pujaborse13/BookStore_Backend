@@ -56,6 +56,7 @@ namespace RepositoryLayer.Service
             }
         }
 
+        //login
         public string Login(LoginModel model)
         {
             var checkUser = context.Admins.FirstOrDefault(x => x.Email == model.Email && x.Password == EncodePasswordToBase64(model.Password));
@@ -65,6 +66,7 @@ namespace RepositoryLayer.Service
                 return token;
             }
             return null;
+
         }
     }
 }
