@@ -107,6 +107,28 @@ namespace RepositoryLayer.Service
 
         }
 
+        //referesh token
+        public TokenResponse LoginRefereshToken(LoginModel model)
+        {
+            var checkUser = context.Admins.FirstOrDefault(x => x.Email == model.Email && x.Password == EncodePasswordToBase64(model.Password));
+            if (checkUser != null)
+            {
+                var accessToken = jwtTokenHelper.GenerateToken(checkUser.Email, checkUser.UserId, checkUser.Role);
+                var refreshToken = jwtTokenHelper.GenerateRefreshToken();
 
+                checkUser.RefreshToken = refreshToken;
+                checkUser.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
+
+                context.SaveChanges();
+
+                return new TokenResponse
+                {
+                    AccessToken = accessToken,
+                    RefreshToken = refreshToken
+                };
+
+            }
+            return null;
+        }
     }
 }

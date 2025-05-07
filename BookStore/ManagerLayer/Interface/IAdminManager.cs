@@ -15,6 +15,10 @@ namespace ManagerLayer.Interface
         public bool ResetPassword(string Email, ResetPasswordModel resetPasswordModel);
 
 
+        public TokenResponse LoginRefereshToken(LoginModel model);
+
+
+
 
     }
 }

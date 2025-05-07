@@ -50,5 +50,12 @@ namespace ManagerLayer.Service
             return adminRepo.ResetPassword(Email, resetPasswordModel);
         }
 
+
+        public TokenResponse LoginRefereshToken(LoginModel model)
+        {
+            return adminRepo.LoginRefereshToken(model);
+        
+        }
+
     }
 }

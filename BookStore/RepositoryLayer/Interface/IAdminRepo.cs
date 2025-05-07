@@ -14,5 +14,8 @@ namespace RepositoryLayer.Interface
         public ForgotPasswordModel ForgotPassword(string Email);   //Generates a password reset token.
         public bool ResetPassword(string Email, ResetPasswordModel resetPasswordModel);
 
+        public TokenResponse LoginRefereshToken(LoginModel model);
+
+
     }
 }

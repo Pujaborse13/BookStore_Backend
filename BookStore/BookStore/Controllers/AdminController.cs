@@ -8,6 +8,8 @@ using RepositoryLayer.Helper;
 using Microsoft.AspNetCore.Identity;
 using System;
 using Microsoft.AspNetCore.Authorization;
+using RepositoryLayer.Context;
+using System.Linq;
 
 namespace BookStore.Controllers
 {
@@ -18,10 +20,16 @@ namespace BookStore.Controllers
     {
 
         private readonly IAdminManager adminManager;
+        private readonly BookStoreDBContext context;
+        private readonly JwtTokenHelper jwtTokenHelper;
 
-        public AdminController(IAdminManager adminManager)
+
+
+        public AdminController(IAdminManager adminManager,BookStoreDBContext context, JwtTokenHelper jwtTokenHelper)
         {
             this.adminManager = adminManager;
+            this.context = context;
+            this.jwtTokenHelper = jwtTokenHelper;
         }
 
 
@@ -128,6 +136,53 @@ namespace BookStore.Controllers
 
         }
 
+
+        [HttpPost]
+        [Route("admin-login-refresht")]
+        public IActionResult LoginRefereshToken(LoginModel model)
+        {
+            var tokenResponse = adminManager.LoginRefereshToken(model);
+
+            //var user = userManager.Login(model);
+            //if (user != null)
+
+            if (tokenResponse != null)
+            {
+                return Ok(new ResponseModel<TokenResponse> { Success = true, Message = "Login Successful", Data = tokenResponse });
+            }
+            return BadRequest(new ResponseModel<string> { Success = false, Message = "Invalid Email or Password" });
+        }
+
+
+        [HttpPost]
+        [Route("admin-refresh-token")]
+        public IActionResult RefreshToken([FromBody] RefreshTokenRequestModel request)
+        {
+            if (request == null || string.IsNullOrEmpty(request.RefreshToken))
+            {
+                return BadRequest(new { message = "Invalid client request" });
+            }
+
+            var user = context.Admins.FirstOrDefault(u => u.RefreshToken == request.RefreshToken);
+
+            if (user == null || user.RefreshTokenExpiryTime <= DateTime.Now)
+            {
+                return Unauthorized(new { message = "Invalid refresh token" });
+            }
+
+            var newAccessToken = jwtTokenHelper.GenerateToken(user.Email, user.UserId, user.Role);
+            var newRefreshToken = jwtTokenHelper.GenerateRefreshToken();
+
+            user.RefreshToken = newRefreshToken;
+            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
+            context.SaveChanges();
+
+            return Ok(new
+            {
+                AccessToken = newAccessToken,
+                RefreshToken = newRefreshToken
+            });
+        }
 
 
 
