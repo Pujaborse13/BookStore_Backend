@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using CommonLayer.Models;
+using RepositoryLayer.Models;
+using RepositoryLayer.Helper;
 using ManagerLayer.Interface;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using RepositoryLayer.Context;
 using RepositoryLayer.Entity;
 using RepositoryLayer.Interface;
+
 
 namespace ManagerLayer.Service
 {
@@ -16,14 +19,16 @@ namespace ManagerLayer.Service
     {
         private readonly IUserRepo userRepo;
         private readonly IConfiguration configuration;
-        private readonly IJwtTokenManager jwtTokenManager;
+         private readonly IUserManager userManager;
+        private readonly BookStoreDBContext context;
 
 
-        public UserManager(IUserRepo userRepo, IConfiguration configuration, IJwtTokenManager jwtTokenManager)
+
+
+        public UserManager(IUserRepo userRepo, IConfiguration configuration, BookStoreDBContext context)
         {
             this.userRepo = userRepo;
             this.configuration = configuration;
-            this.jwtTokenManager = jwtTokenManager;
         }
 
 
@@ -38,12 +43,26 @@ namespace ManagerLayer.Service
         }
 
 
-        public UserEntity Login(LoginModel model)
+        public string Login(LoginModel model)
         {
             return userRepo.Login(model);
         }
 
 
+
+
+        //public ForgotPasswordModel ForgotPassword(string Email)
+        //{
+        //    UserEntity user = context.Users.ToList().Find(user => user.Email == Email);
+        //    ForgotPasswordModel forgotPassword = new ForgotPasswordModel();
+        //    forgotPassword.Email = user.Email;
+        //    forgotPassword.UserID = user.UserId;
+        //    forgotPassword.Token = jwtTokenManager.GenerateToken(user.Email, user.UserId, user.Role);
+
+        //    return forgotPassword;
+
+
+        //}
 
 
     }

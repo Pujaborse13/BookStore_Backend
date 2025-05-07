@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using CommonLayer.Models;
+using RepositoryLayer.Models;
 using RepositoryLayer.Entity;
 
 namespace ManagerLayer.Interface
@@ -10,7 +10,7 @@ namespace ManagerLayer.Interface
     {
         public AdminEntity Register(RegistrationModel model);
         public bool CheckEmail(string email);
-        public AdminEntity Login(LoginModel model);
+        public string Login(LoginModel model);
 
     }
 }

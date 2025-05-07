@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using RepositoryLayer.Entity;
-using CommonLayer.Models;
+using RepositoryLayer.Models;
 
 
 namespace RepositoryLayer.Interface
@@ -11,7 +11,11 @@ namespace RepositoryLayer.Interface
     {
         public UserEntity Register(RegistrationModel model);
         public bool CheckEmail(string email);
-        public UserEntity Login(LoginModel model);
+        public string Login(LoginModel model);
+
+        //public ForgotPasswordModel ForgotPassword(string Email);   //Generates a password reset token.
+
+       // public bool ResetPassword(string Email, ResetPasswordModel resetPasswordModel);
 
 
     }

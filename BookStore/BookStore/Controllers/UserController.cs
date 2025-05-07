@@ -1,10 +1,13 @@
-﻿using CommonLayer.Models;
+﻿using System.Threading.Tasks;
+using System;
+using RepositoryLayer.Models;
 using ManagerLayer.Interface;
 using ManagerLayer.Service;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using RepositoryLayer.Entity;
+using RepositoryLayer.Helper;
 
 namespace BookStore.Controllers
 {
@@ -12,14 +15,16 @@ namespace BookStore.Controllers
     //[ApiController]
     public class UserController : ControllerBase
     {
-        private readonly IUserManager userManager;
-        private readonly IJwtTokenManager jwtTokenManager;
 
-        public UserController(IUserManager userManager, IJwtTokenManager jwtTokenManager)
+        private readonly IUserManager userManager;
+        private readonly JwtTokenHelper jwtTokenHelper;
+        //private readonly IBus bus;
+
+        public UserController(IUserManager userManager)
         {
             this.userManager = userManager;
-            this.jwtTokenManager = jwtTokenManager;
-           
+           /// this.bus = bus;
+
 
         }
 
@@ -53,20 +58,53 @@ namespace BookStore.Controllers
 
 
 
-        [HttpPost("login")]
+        [HttpPost]
+        [Route("userLogin")]
         public IActionResult Login(LoginModel model)
         {
             var user = userManager.Login(model);
-
             if (user != null)
             {
-                string token = jwtTokenManager.GenerateToken(user.Email, user.UserId, user.Role);
+                return Ok(new ResponseModel<string> { Success = true, Message = "Login Successful", Data = user });
+            }
+            return BadRequest(new ResponseModel<string> { Success = false, Message = "Invalid Email or Password" });
+        }
 
-                return Ok(new { Token = token,Message = "Login successful" });
+
+        /*
+        [HttpPost]
+        [Route("ForgotPassword")]
+        public async Task<IActionResult> ForgotPassword(string Email)
+        {
+            try
+            {
+                if (userManager.CheckEmail(Email))
+                {
+                    Send send = new Send();
+                    ForgotPasswordModel forgotPasswordModel = userManager.ForgotPassword(Email);
+                    send.SendMail(forgotPasswordModel.Email, forgotPasswordModel.Token);
+
+                    //Uri uri = new Uri("rabbitmq://localhost/FundooNotesEmailQueue");
+                    //var endPoint = await bus.GetSendEndpoint(uri);
+
+                   // await endPoint.Send(forgotPasswordModel);
+                    return Ok(new ResponseModel<string> { Success = true, Message = "Mail send Sucessfully" });
+                }
+                else
+                {
+
+                    return BadRequest(new ResponseModel<string>() { Success = false, Message = "Email not send " });
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+
             }
 
-            return Unauthorized(new { Message = "Invalid credentials" });
-        }
+
+        }*/
 
 
 

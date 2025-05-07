@@ -3,20 +3,19 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using ManagerLayer.Interface;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using RepositoryLayer.Interface;
 
-namespace ManagerLayer.Service
+namespace RepositoryLayer.Helper
 {
-    public class JwtTokenManager : IJwtTokenManager
+    public class JwtTokenHelper
     {
         private readonly IUserRepo userRepo;
         private readonly IConfiguration configuration;
 
 
-        public JwtTokenManager(IConfiguration configuration)
+        public JwtTokenHelper(IConfiguration configuration)
         {
             this.configuration = configuration;
         }

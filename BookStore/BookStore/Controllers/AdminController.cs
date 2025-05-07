@@ -1,9 +1,11 @@
-﻿using CommonLayer.Models;
+﻿using RepositoryLayer.Models;
 using ManagerLayer.Interface;
 using ManagerLayer.Service;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RepositoryLayer.Entity;
+using RepositoryLayer.Helper;
+using Microsoft.AspNetCore.Identity;
 
 namespace BookStore.Controllers
 {
@@ -14,12 +16,10 @@ namespace BookStore.Controllers
     {
 
         private readonly IAdminManager adminManager;
-        private readonly IJwtTokenManager jwtTokenManager;
 
-        public AdminController(IAdminManager adminManager, IJwtTokenManager jwtTokenManager)
+        public AdminController(IAdminManager adminManager)
         {
             this.adminManager = adminManager;
-            this.jwtTokenManager = jwtTokenManager;
         }
 
 
@@ -56,25 +56,20 @@ namespace BookStore.Controllers
         [HttpPost("adminLogin")]
         public IActionResult Login(LoginModel model)
         {
-            var user = adminManager.Login(model);
 
+
+            var user = adminManager.Login(model);
             if (user != null)
             {
-                string token = jwtTokenManager.GenerateToken(user.Email, user.UserId, user.Role);
-
-                return Ok(new
-                {
-                    Token = token,
-                    Message = "Login successful"
-                });
+                return Ok(new ResponseModel<string> { Success = true, Message = "Login Successful", Data = user });
             }
+            return BadRequest(new ResponseModel<string> { Success = false, Message = "Invalid Email or Password" });
 
-            return Unauthorized(new { Message = "Invalid credentials" });
         }
 
 
 
-
-
     }
+
+   
 }

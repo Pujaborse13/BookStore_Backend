@@ -5,12 +5,14 @@ using Microsoft.Extensions.Configuration;
 using RepositoryLayer.Context;
 using RepositoryLayer.Entity;
 using RepositoryLayer.Interface;
-using CommonLayer.Models;
+using RepositoryLayer.Models;
 using System.Linq;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Data;
+using RepositoryLayer.Helper;
+//using ManagerLayer.Interface;
 
 
 
@@ -20,16 +22,20 @@ namespace RepositoryLayer.Service
     {
         private readonly BookStoreDBContext context;
         private readonly IConfiguration configuration;
+        private readonly JwtTokenHelper jwtTokenHelper;
 
 
-        public UserRepo(BookStoreDBContext context, IConfiguration configuration)
+
+        public UserRepo(BookStoreDBContext context, IConfiguration configuration, JwtTokenHelper jwtTokenHelper)
         {
             this.context = context;
-            this.configuration = configuration;  
+            this.configuration = configuration; 
+            this.jwtTokenHelper = jwtTokenHelper;
 
         }
 
 
+        //Registration 
         public UserEntity Register(RegistrationModel model)
         {
 
@@ -47,6 +53,7 @@ namespace RepositoryLayer.Service
 
         }
 
+        //check Email
         public bool CheckEmail(string email)
         {
             var result = this.context.Users.FirstOrDefault(x => x.Email == email);
@@ -58,6 +65,7 @@ namespace RepositoryLayer.Service
             return true;
         }
 
+        //encode password 
         private string EncodePasswordToBase64(string password)
         {
             try
@@ -74,10 +82,36 @@ namespace RepositoryLayer.Service
             }
         }
 
-        public UserEntity Login(LoginModel model)
+        //login 
+        public string Login(LoginModel model)
         {
-            var encodedPassword = EncodePasswordToBase64(model.Password);
-            return context.Users.FirstOrDefault(x => x.Email == model.Email && x.Password == encodedPassword);
+            var checkUser = context.Users.FirstOrDefault(x => x.Email == model.Email && x.Password == EncodePasswordToBase64(model.Password));
+            if (checkUser != null)
+            {
+                var token = jwtTokenHelper.GenerateToken(checkUser.Email, checkUser.UserId , checkUser.Role);
+                return token;
+            }
+            return null;
         }
+
+       
+
+
+        ////forgot password
+        //public ForgotPasswordModel ForgotPassword(string Email)
+        //{
+        //    UserEntity user = context.Users.ToList().Find(user => user.Email == Email);
+        //    ForgotPasswordModel forgotPassword = new ForgotPasswordModel();
+        //    forgotPassword.Email = user.Email;
+        //    forgotPassword.UserID = user.UserId;
+        //    forgotPassword.Token = jwtTokenHelper.GenerateToken(user.Email, user.UserId, user.Role);
+
+        //    return forgotPassword;
+
+
+        //}
+
+
+
     }
 }

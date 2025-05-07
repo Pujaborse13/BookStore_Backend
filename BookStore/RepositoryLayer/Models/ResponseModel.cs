@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace CommonLayer.Models
+namespace RepositoryLayer.Models
 {
     public class ResponseModel<T>
     {

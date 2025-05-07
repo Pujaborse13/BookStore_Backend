@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using CommonLayer.Models;
+using RepositoryLayer.Models;
 using ManagerLayer.Interface;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -35,7 +35,7 @@ namespace ManagerLayer.Service
         }
 
 
-        public AdminEntity Login(LoginModel model)
+        public string Login(LoginModel model)
         {
             return adminRepo.Login(model);
         }

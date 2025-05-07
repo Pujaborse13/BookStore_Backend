@@ -18,6 +18,10 @@ using RepositoryLayer.Service;
 using ManagerLayer.Service;
 using ManagerLayer.Interface;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using RepositoryLayer.Helper;
 
 
 
@@ -46,8 +50,8 @@ namespace BookStore
 
             services.AddTransient<IAdminRepo, AdminRepo>();
             services.AddTransient<IAdminManager, AdminManager>();
-            
-            services.AddTransient<IJwtTokenManager, JwtTokenManager>();
+
+            services.AddTransient<JwtTokenHelper>();
 
 
             //Swagger for API Documentation
@@ -84,6 +88,28 @@ namespace BookStore
                        }
                     });
                 });
+
+
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = Configuration["Jwt:Issuer"],
+                        ValidAudience = Configuration["Jwt:Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+                    };
+                });
+
+
+
+
+
 
         }
 

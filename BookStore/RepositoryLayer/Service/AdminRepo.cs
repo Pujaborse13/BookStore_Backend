@@ -1,22 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using CommonLayer.Models;
-using Microsoft.Extensions.Configuration;
+using RepositoryLayer.Models;
 using RepositoryLayer.Context;
 using RepositoryLayer.Entity;
 using RepositoryLayer.Interface;
+using RepositoryLayer.Helper;
 
 namespace RepositoryLayer.Service
 {
     public class AdminRepo : IAdminRepo
     {
         private readonly BookStoreDBContext context;
-        public AdminRepo(BookStoreDBContext context)
+        private readonly JwtTokenHelper jwtTokenHelper;
+        public AdminRepo(BookStoreDBContext context, JwtTokenHelper jwtTokenHelper)
         {
             this.context = context;
-
+            this.jwtTokenHelper = jwtTokenHelper;
         }
 
         public AdminEntity Register(RegistrationModel model)
@@ -57,10 +56,15 @@ namespace RepositoryLayer.Service
             }
         }
 
-        public AdminEntity Login(LoginModel model)
+        public string Login(LoginModel model)
         {
-            var encodedPassword = EncodePasswordToBase64(model.Password);
-            return context.Admins.FirstOrDefault(x => x.Email == model.Email && x.Password == encodedPassword);
+            var checkUser = context.Admins.FirstOrDefault(x => x.Email == model.Email && x.Password == EncodePasswordToBase64(model.Password));
+            if (checkUser != null)
+            {
+                var token = jwtTokenHelper.GenerateToken(checkUser.Email, checkUser.UserId, checkUser.Role);
+                return token;
+            }
+            return null;
         }
     }
 }
