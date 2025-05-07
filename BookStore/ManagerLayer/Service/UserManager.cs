@@ -18,17 +18,10 @@ namespace ManagerLayer.Service
     public  class UserManager :IUserManager
     {
         private readonly IUserRepo userRepo;
-        private readonly IConfiguration configuration;
-         private readonly IUserManager userManager;
-        private readonly BookStoreDBContext context;
 
-
-
-
-        public UserManager(IUserRepo userRepo, IConfiguration configuration, BookStoreDBContext context)
+        public UserManager(IUserRepo userRepo, BookStoreDBContext context)
         {
             this.userRepo = userRepo;
-            this.configuration = configuration;
         }
 
 
@@ -43,7 +36,7 @@ namespace ManagerLayer.Service
         }
 
 
-        public string Login(LoginModel model)
+        public TokenResponse Login(LoginModel model)
         {
             return userRepo.Login(model);
         }

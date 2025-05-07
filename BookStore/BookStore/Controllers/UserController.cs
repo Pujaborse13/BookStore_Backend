@@ -8,7 +8,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using RepositoryLayer.Entity;
 using RepositoryLayer.Helper;
+using RepositoryLayer.Models;
+
+
 using Microsoft.AspNetCore.Authorization;
+using RepositoryLayer.Context;
+using System.Linq;
 
 namespace BookStore.Controllers
 {
@@ -19,10 +24,14 @@ namespace BookStore.Controllers
 
         private readonly IUserManager userManager;
         private readonly JwtTokenHelper jwtTokenHelper;
+        private readonly BookStoreDBContext context;
 
-        public UserController(IUserManager userManager)
+
+        public UserController(IUserManager userManager, JwtTokenHelper jwtTokenHelper , BookStoreDBContext context)
         {
             this.userManager = userManager;
+            this.jwtTokenHelper = jwtTokenHelper;
+            this.context = context;
 
 
         }
@@ -30,7 +39,7 @@ namespace BookStore.Controllers
 
         //httplocal/api/Users/Reg
         [HttpPost]
-        [Route("userRegistration")]
+        [Route("user-registration")]
         public IActionResult Register(RegistrationModel model)
         {
             var check = userManager.CheckEmail(model.Email);
@@ -58,13 +67,17 @@ namespace BookStore.Controllers
 
 
         [HttpPost]
-        [Route("userLogin")]
+        [Route("user-login")]
         public IActionResult Login(LoginModel model)
         {
-            var user = userManager.Login(model);
-            if (user != null)
+            var tokenResponse = userManager.Login(model);
+
+            //var user = userManager.Login(model);
+            //if (user != null)
+
+            if (tokenResponse != null)
             {
-                return Ok(new ResponseModel<string> { Success = true, Message = "Login Successful", Data = user });
+                return Ok(new ResponseModel<TokenResponse> { Success = true, Message = "Login Successful", Data = tokenResponse });
             }
             return BadRequest(new ResponseModel<string> { Success = false, Message = "Invalid Email or Password" });
         }
@@ -72,7 +85,7 @@ namespace BookStore.Controllers
 
         
         [HttpPost]
-        [Route("userForgotPassword")]
+        [Route("user-forgot-password")]
         public IActionResult ForgotPassword(string Email)
         {
             try
@@ -102,8 +115,9 @@ namespace BookStore.Controllers
 
        // [Authorize]
         [HttpPost]
-        [Route("ResetPassword")]
-        public ActionResult RestPassword(ResetPasswordModel reset){
+        [Route("user-reset-password")]
+        public ActionResult RestPassword(ResetPasswordModel reset)
+        {
             try
             {
                 string Email = User.FindFirst("EmailID").Value;
@@ -122,9 +136,39 @@ namespace BookStore.Controllers
             {
                 throw ex;
             }
-
-
         }
+
+
+        [HttpPost]
+        [Route("refresh-token")]
+        public IActionResult RefreshToken([FromBody] RefreshTokenRequestModel request)
+        {
+            if (request == null || string.IsNullOrEmpty(request.RefreshToken))
+            {
+                return BadRequest(new { message = "Invalid client request" });
+            }
+
+            var user = context.Users.FirstOrDefault(u => u.RefreshToken == request.RefreshToken);
+
+            if (user == null || user.RefreshTokenExpiryTime <= DateTime.Now)
+            {
+                return Unauthorized(new { message = "Invalid refresh token" });
+            }
+
+            var newAccessToken = jwtTokenHelper.GenerateToken(user.Email, user.UserId, user.Role);
+            var newRefreshToken = jwtTokenHelper.GenerateRefreshToken();
+
+            user.RefreshToken = newRefreshToken;
+            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
+            context.SaveChanges();
+
+            return Ok(new
+            {
+                AccessToken = newAccessToken,
+                RefreshToken = newRefreshToken
+            });
+        }
+
 
 
 

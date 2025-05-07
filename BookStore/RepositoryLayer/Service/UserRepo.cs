@@ -12,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Data;
 using RepositoryLayer.Helper;
+using Microsoft.EntityFrameworkCore;
 //using ManagerLayer.Interface;
 
 
@@ -83,13 +84,25 @@ namespace RepositoryLayer.Service
         }
 
         //login 
-        public string Login(LoginModel model)
+        public TokenResponse Login(LoginModel model)
         {
             var checkUser = context.Users.FirstOrDefault(x => x.Email == model.Email && x.Password == EncodePasswordToBase64(model.Password));
             if (checkUser != null)
             {
-                var token = jwtTokenHelper.GenerateToken(checkUser.Email, checkUser.UserId , checkUser.Role);
-                return token;
+                var accessToken = jwtTokenHelper.GenerateToken(checkUser.Email, checkUser.UserId , checkUser.Role);
+                var refreshToken = jwtTokenHelper.GenerateRefreshToken();
+
+                checkUser.RefreshToken = refreshToken;
+                checkUser.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
+         
+                context.SaveChanges();
+
+                return new TokenResponse
+                {
+                    AccessToken = accessToken,
+                    RefreshToken = refreshToken
+                };
+                
             }
             return null;
         }
@@ -112,6 +125,7 @@ namespace RepositoryLayer.Service
 
         }
 
+        //Reset Password
         public bool ResetPassword(string Email, ResetPasswordModel resetPasswordModel)
         {
             UserEntity User = context.Users.ToList().Find(user => user.Email == Email);
@@ -132,11 +146,15 @@ namespace RepositoryLayer.Service
 
         }
 
-    }
+
 
         
+        }
+
+
+    }
 
 
 
 
-}
+

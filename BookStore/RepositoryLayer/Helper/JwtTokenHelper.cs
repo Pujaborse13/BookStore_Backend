@@ -35,7 +35,7 @@ namespace RepositoryLayer.Helper
             var token = new JwtSecurityToken(configuration["Jwt:Issuer"],
                 configuration["Jwt:Audience"],
                 claims,
-                expires: DateTime.Now.AddHours(2),
+                expires: DateTime.Now.AddHours(2), // Access token valid for 15 hours
                 signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);

@@ -9,8 +9,8 @@ namespace ManagerLayer.Interface
     {
         public UserEntity Register(RegistrationModel model);
         public bool CheckEmail(string email);
-        public string Login(LoginModel model);
-        
+        public TokenResponse Login(LoginModel model);
+
         public ForgotPasswordModel ForgotPassword(string Email);
         public bool ResetPassword(string Email, ResetPasswordModel resetPasswordModel);
 

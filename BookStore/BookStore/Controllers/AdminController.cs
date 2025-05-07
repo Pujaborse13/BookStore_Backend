@@ -27,7 +27,7 @@ namespace BookStore.Controllers
 
         //httplocal/api/Users/Reg
         [HttpPost]
-        [Route("adminRegistration")]
+        [Route("admin-registration")]
         public IActionResult Register(RegistrationModel model)
         {
             var check = adminManager.CheckEmail(model.Email);
@@ -55,7 +55,7 @@ namespace BookStore.Controllers
         }
 
 
-        [HttpPost("adminLogin")]
+        [HttpPost("admin-login")]
         public IActionResult Login(LoginModel model)
         {
 
@@ -72,7 +72,7 @@ namespace BookStore.Controllers
 
 
         [HttpPost]
-        [Route("adminForgotPassword")]
+        [Route("admin-forgot-password")]
         public IActionResult ForgotPassword(string Email)
         {
             try
@@ -104,7 +104,7 @@ namespace BookStore.Controllers
 
 
         [HttpPost]
-        [Route("adminResetPassword")]
+        [Route("admin-reset-password")]
         public ActionResult RestPassword(ResetPasswordModel reset)
         {
             try
