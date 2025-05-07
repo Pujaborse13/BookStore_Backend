@@ -68,5 +68,18 @@ namespace RepositoryLayer.Service
             return null;
 
         }
+
+        public ForgotPasswordModel ForgotPassword(string Email)
+        {
+            AdminEntity user = context.Admins.ToList().Find(user => user.Email == Email);
+
+            ForgotPasswordModel forgotPassword = new ForgotPasswordModel();
+            forgotPassword.Email = user.Email;
+            forgotPassword.UserID = user.UserId;
+
+            forgotPassword.Token = jwtTokenHelper.GenerateToken(user.Email, user.UserId, user.Role);
+
+            return forgotPassword;
+        }
     }
 }

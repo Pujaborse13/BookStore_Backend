@@ -19,12 +19,10 @@ namespace BookStore.Controllers
 
         private readonly IUserManager userManager;
         private readonly JwtTokenHelper jwtTokenHelper;
-        //private readonly IBus bus;
 
         public UserController(IUserManager userManager)
         {
             this.userManager = userManager;
-           /// this.bus = bus;
 
 
         }
@@ -74,8 +72,7 @@ namespace BookStore.Controllers
 
         
         [HttpPost]
-        [Route("ForgotPassword")]
-        //public async Task<IActionResult> ForgotPassword(string Email)
+        [Route("userForgotPassword")]
         public IActionResult ForgotPassword(string Email)
         {
             try

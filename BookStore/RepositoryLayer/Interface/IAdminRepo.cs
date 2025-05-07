@@ -10,6 +10,8 @@ namespace RepositoryLayer.Interface
     {
         public AdminEntity Register(RegistrationModel model);
         public bool CheckEmail(string email);
-        public string Login(LoginModel model); 
+        public string Login(LoginModel model);
+        public ForgotPasswordModel ForgotPassword(string Email);   //Generates a password reset token.
+
     }
 }

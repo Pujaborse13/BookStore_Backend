@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using RepositoryLayer.Entity;
 using RepositoryLayer.Helper;
 using Microsoft.AspNetCore.Identity;
+using System;
 
 namespace BookStore.Controllers
 {
@@ -66,6 +67,42 @@ namespace BookStore.Controllers
             return BadRequest(new ResponseModel<string> { Success = false, Message = "Invalid Email or Password" });
 
         }
+
+
+
+        [HttpPost]
+        [Route("adminForgotPassword")]
+        public IActionResult ForgotPassword(string Email)
+        {
+            try
+            {
+                if (adminManager.CheckEmail(Email))
+                {
+                    ForgotPasswordModel forgotPasswordModel = adminManager.ForgotPassword(Email);
+
+                    Send send = new Send();
+                    send.SendMail(forgotPasswordModel.Email, forgotPasswordModel.Token);
+                    return Ok(new ResponseModel<string> { Success = true, Message = "Mail send Sucessfully" });
+                }
+                else
+                {
+
+                    return BadRequest(new ResponseModel<string>() { Success = false, Message = "Email not send " });
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+
+            }
+
+
+        }
+
+
+
+
 
 
 
