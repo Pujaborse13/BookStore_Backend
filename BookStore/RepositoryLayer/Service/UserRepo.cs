@@ -120,7 +120,6 @@ namespace RepositoryLayer.Service
             {
 
                 User.Password = EncodePasswordToBase64(resetPasswordModel.ConfirmPassword);
-                //User.ChangedAt = DateTime.Now;
                 context.SaveChanges();
                 return true;
             }

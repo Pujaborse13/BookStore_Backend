@@ -5,16 +5,20 @@ using RepositoryLayer.Context;
 using RepositoryLayer.Entity;
 using RepositoryLayer.Interface;
 using RepositoryLayer.Helper;
+using Microsoft.Extensions.Configuration;
 
 namespace RepositoryLayer.Service
 {
     public class AdminRepo : IAdminRepo
     {
         private readonly BookStoreDBContext context;
+       // private readonly IConfiguration configuration;
         private readonly JwtTokenHelper jwtTokenHelper;
-        public AdminRepo(BookStoreDBContext context, JwtTokenHelper jwtTokenHelper)
+
+        public AdminRepo(BookStoreDBContext context,   JwtTokenHelper jwtTokenHelper)
         {
             this.context = context;
+            //this.configuration = configuration;
             this.jwtTokenHelper = jwtTokenHelper;
         }
 
@@ -81,5 +85,28 @@ namespace RepositoryLayer.Service
 
             return forgotPassword;
         }
+
+
+        public bool ResetPassword(string Email, ResetPasswordModel resetPasswordModel)
+        {
+            AdminEntity User = context.Admins.ToList().Find(user => user.Email == Email);
+
+            if (CheckEmail(User.Email))
+            {
+
+                User.Password = EncodePasswordToBase64(resetPasswordModel.ConfirmPassword);
+                context.SaveChanges();
+                return true;
+            }
+
+            else
+            {
+                return false;
+
+            }
+
+        }
+
+
     }
 }

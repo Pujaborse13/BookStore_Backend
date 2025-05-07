@@ -100,7 +100,7 @@ namespace BookStore.Controllers
         }
 
 
-        [Authorize]
+       // [Authorize]
         [HttpPost]
         [Route("ResetPassword")]
         public ActionResult RestPassword(ResetPasswordModel reset){

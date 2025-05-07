@@ -7,6 +7,7 @@ using RepositoryLayer.Entity;
 using RepositoryLayer.Helper;
 using Microsoft.AspNetCore.Identity;
 using System;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BookStore.Controllers
 {
@@ -95,6 +96,34 @@ namespace BookStore.Controllers
             {
                 throw ex;
 
+            }
+
+
+        }
+
+
+
+       // [Authorize]
+        [HttpPost]
+        [Route("adminResetPassword")]
+        public ActionResult RestPassword(ResetPasswordModel reset)
+        {
+            try
+            {
+                string Email = User.FindFirst("EmailID").Value;
+                if (adminManager.ResetPassword(Email, reset))
+                {
+                    return Ok(new ResponseModel<string> { Success = true, Message = "Password Changed" });
+                }
+                else
+                {
+                    return BadRequest(new ResponseModel<string> { Success = false, Message = "Password Wrong" });
+                }
+            }
+
+            catch (Exception ex)
+            {
+                throw ex;
             }
 
 

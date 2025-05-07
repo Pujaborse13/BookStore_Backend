@@ -45,5 +45,10 @@ namespace ManagerLayer.Service
             return adminRepo.ForgotPassword(Email);
         }
 
+        public bool ResetPassword(string Email, ResetPasswordModel resetPasswordModel)
+        {
+            return adminRepo.ResetPassword(Email, resetPasswordModel);
+        }
+
     }
 }
