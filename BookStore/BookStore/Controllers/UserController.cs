@@ -71,23 +71,27 @@ namespace BookStore.Controllers
         }
 
 
-        /*
+        
         [HttpPost]
         [Route("ForgotPassword")]
-        public async Task<IActionResult> ForgotPassword(string Email)
+        //public async Task<IActionResult> ForgotPassword(string Email)
+        public IActionResult ForgotPassword(string Email)
+
+
         {
             try
             {
                 if (userManager.CheckEmail(Email))
                 {
-                    Send send = new Send();
                     ForgotPasswordModel forgotPasswordModel = userManager.ForgotPassword(Email);
+
+                    Send send = new Send();
                     send.SendMail(forgotPasswordModel.Email, forgotPasswordModel.Token);
 
                     //Uri uri = new Uri("rabbitmq://localhost/FundooNotesEmailQueue");
                     //var endPoint = await bus.GetSendEndpoint(uri);
 
-                   // await endPoint.Send(forgotPasswordModel);
+                   //await endPoint.Send(forgotPasswordModel);
                     return Ok(new ResponseModel<string> { Success = true, Message = "Mail send Sucessfully" });
                 }
                 else
@@ -104,7 +108,7 @@ namespace BookStore.Controllers
             }
 
 
-        }*/
+        }
 
 
 

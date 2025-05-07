@@ -48,22 +48,9 @@ namespace ManagerLayer.Service
             return userRepo.Login(model);
         }
 
-
-
-
-        //public ForgotPasswordModel ForgotPassword(string Email)
-        //{
-        //    UserEntity user = context.Users.ToList().Find(user => user.Email == Email);
-        //    ForgotPasswordModel forgotPassword = new ForgotPasswordModel();
-        //    forgotPassword.Email = user.Email;
-        //    forgotPassword.UserID = user.UserId;
-        //    forgotPassword.Token = jwtTokenManager.GenerateToken(user.Email, user.UserId, user.Role);
-
-        //    return forgotPassword;
-
-
-        //}
-
-
+        public ForgotPasswordModel ForgotPassword(string Email)
+        {
+            return userRepo.ForgotPassword(Email);
+        }
     }
 }

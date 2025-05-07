@@ -94,24 +94,26 @@ namespace RepositoryLayer.Service
             return null;
         }
 
-       
-
-
-        ////forgot password
-        //public ForgotPasswordModel ForgotPassword(string Email)
-        //{
-        //    UserEntity user = context.Users.ToList().Find(user => user.Email == Email);
-        //    ForgotPasswordModel forgotPassword = new ForgotPasswordModel();
-        //    forgotPassword.Email = user.Email;
-        //    forgotPassword.UserID = user.UserId;
-        //    forgotPassword.Token = jwtTokenHelper.GenerateToken(user.Email, user.UserId, user.Role);
-
-        //    return forgotPassword;
-
-
-        //}
 
 
 
+        //forgot password
+        public ForgotPasswordModel ForgotPassword(string Email)
+        {
+            UserEntity user = context.Users.ToList().Find(user => user.Email == Email);
+
+            ForgotPasswordModel forgotPassword = new ForgotPasswordModel();
+            forgotPassword.Email = user.Email;
+            forgotPassword.UserID = user.UserId;
+
+            forgotPassword.Token = jwtTokenHelper.GenerateToken(user.Email, user.UserId, user.Role);
+
+            return forgotPassword;
+
+
+          }
+
+
+
+        }
     }
-}
