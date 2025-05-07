@@ -16,6 +16,7 @@ namespace RepositoryLayer.Helper
             string fromPassword = "tswm qqrv onim xmol";
 
             MailMessage message = new MailMessage(fromEmail, toMail);
+
             message.Subject = "Password Reset Token";
             message.Body = $"Your password reset token is: {token}";
             message.IsBodyHtml = true;

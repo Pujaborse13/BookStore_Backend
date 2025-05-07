@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using RepositoryLayer.Entity;
 using RepositoryLayer.Helper;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BookStore.Controllers
 {
@@ -76,8 +77,6 @@ namespace BookStore.Controllers
         [Route("ForgotPassword")]
         //public async Task<IActionResult> ForgotPassword(string Email)
         public IActionResult ForgotPassword(string Email)
-
-
         {
             try
             {
@@ -87,24 +86,44 @@ namespace BookStore.Controllers
 
                     Send send = new Send();
                     send.SendMail(forgotPasswordModel.Email, forgotPasswordModel.Token);
-
-                    //Uri uri = new Uri("rabbitmq://localhost/FundooNotesEmailQueue");
-                    //var endPoint = await bus.GetSendEndpoint(uri);
-
-                   //await endPoint.Send(forgotPasswordModel);
                     return Ok(new ResponseModel<string> { Success = true, Message = "Mail send Sucessfully" });
                 }
-                else
-                {
+                else{
 
                     return BadRequest(new ResponseModel<string>() { Success = false, Message = "Email not send " });
 
                 }
             }
+            catch (Exception ex){
+                throw ex;
+
+            }
+
+
+        }
+
+
+        [Authorize]
+        [HttpPost]
+        [Route("ResetPassword")]
+        public ActionResult RestPassword(ResetPasswordModel reset){
+            try
+            {
+                string Email = User.FindFirst("EmailID").Value;
+                if (userManager.ResetPassword(Email, reset))
+                {
+                    return Ok(new ResponseModel<string> { Success = true, Message = "Password Changed" });
+                }
+                else
+                {
+                    return BadRequest(new ResponseModel<string> { Success = false, Message = "Password Wrong" });
+                }
+
+            }
+
             catch (Exception ex)
             {
                 throw ex;
-
             }
 
 

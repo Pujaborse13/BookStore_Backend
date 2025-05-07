@@ -110,10 +110,34 @@ namespace RepositoryLayer.Service
 
             return forgotPassword;
 
+        }
 
-          }
+        public bool ResetPassword(string Email, ResetPasswordModel resetPasswordModel)
+        {
+            UserEntity User = context.Users.ToList().Find(user => user.Email == Email);
 
+            if (CheckEmail(User.Email))
+            {
 
+                User.Password = EncodePasswordToBase64(resetPasswordModel.ConfirmPassword);
+                //User.ChangedAt = DateTime.Now;
+                context.SaveChanges();
+                return true;
+            }
+
+            else
+            {
+                return false;
+
+            }
 
         }
+
     }
+
+        
+
+
+
+
+}
