@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -49,6 +50,24 @@ namespace RepositoryLayer.Helper
                 rng.GetBytes(randomNumber);
                 return Convert.ToBase64String(randomNumber);
             }
+        }
+
+
+        public string ExtractRoleFromJwt(string token)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var jwtToken = tokenHandler.ReadJwtToken(token);
+
+            var roleClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "role")?.Value;
+            
+            Console.WriteLine($"Extracted role: {roleClaim}");
+
+            if (string.IsNullOrEmpty(roleClaim))
+            {
+                throw new InvalidOperationException("Role not found in token.");
+            }
+
+            return roleClaim;
         }
 
 

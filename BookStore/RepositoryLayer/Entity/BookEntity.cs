@@ -14,7 +14,10 @@ namespace RepositoryLayer.Entity
         public string BookName { get; set; }
         public string Author { get; set; }
         public string Description { get; set; }
+        [Column(TypeName = "decimal(18, 2)")]
         public decimal Price { get; set; }
+
+        [Column(TypeName = "decimal(18, 2)")]
         public decimal? DiscountPrice { get; set; }
         public int Quantity { get; set; }
         public string BookImage { get; set; }

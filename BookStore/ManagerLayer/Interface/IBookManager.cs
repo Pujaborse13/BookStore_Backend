@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using RepositoryLayer.Entity;
 
-namespace RepositoryLayer.Interface
+namespace ManagerLayer.Interface
 {
-    public interface IBookRepo
+    public interface IBookManager
     {
         public string LoadBooksFromCsv(string token);
+
 
     }
 }

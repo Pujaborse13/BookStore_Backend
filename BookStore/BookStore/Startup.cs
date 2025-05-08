@@ -54,6 +54,10 @@ namespace BookStore
 
             services.AddTransient<JwtTokenHelper>();
 
+            services.AddTransient<IBookRepo, BookRepo>();
+            services.AddTransient<IBookManager, BookManager>();
+
+
 
             //Swagger for API Documentation
             services.AddSwaggerGen(
@@ -104,7 +108,9 @@ namespace BookStore
                         ValidIssuer = Configuration["Jwt:Issuer"],
                         ValidAudience = Configuration["Jwt:Audience"],
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+                        
                     };
+
                 });
 
         }

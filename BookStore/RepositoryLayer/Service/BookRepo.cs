@@ -1,10 +1,92 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
 using System.Text;
+using CsvHelper;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using RepositoryLayer.Context;
+using RepositoryLayer.Entity;
+using RepositoryLayer.Helper;
+using RepositoryLayer.Interface;
 
 namespace RepositoryLayer.Service
 {
-    internal class BookRepo
-    {
+   public class BookRepo : IBookRepo
+   {
+        private readonly BookStoreDBContext context;
+        private readonly IConfiguration configuration;
+        private readonly JwtTokenHelper jwtTokenHelper;
+
+        public BookRepo(BookStoreDBContext context, IConfiguration configuration, JwtTokenHelper jwtTokenHelper)
+        {
+            this.context = context;
+            this.configuration = configuration;
+            this.jwtTokenHelper = jwtTokenHelper;
+
+        }
+
+
+        public string LoadBooksFromCsv(string token)
+        {
+            var role = jwtTokenHelper.ExtractRoleFromJwt(token);
+            if (!string.Equals(role?.Trim(), "admin", StringComparison.OrdinalIgnoreCase))
+            {
+                return "Unauthorized: Only admin can load books.";
+            }
+
+
+            try
+            {
+                //string relativePath = Path.Combine("RepositoryLayer", "Helper", "BooksConverted.csv");
+                //string basePath = AppDomain.CurrentDomain.BaseDirectory;
+                //string fullPath = Path.GetFullPath(Path.Combine(basePath, relativePath));
+
+                string basePath = AppDomain.CurrentDomain.BaseDirectory;
+                string relativePath = @"..\..\..\..\RepositoryLayer\Helper\books.csv";
+
+                string fullPath = Path.GetFullPath(Path.Combine(basePath, relativePath));
+
+                var config = new CsvHelper.Configuration.CsvConfiguration(CultureInfo.InvariantCulture)
+                {
+                    HeaderValidated = null,
+                    MissingFieldFound = null
+                };
+
+                using (var reader = new StreamReader(fullPath))
+                using (var csv = new CsvReader(reader, config))
+                {
+                    var records = csv.GetRecords<BookEntity>().ToList();
+
+                    foreach (var book in records)
+                    {
+                        book.Id = 0;
+                        book.CreatedAt = DateTime.Now;
+                        book.UpdatedAt = DateTime.Now;
+                    }
+
+                    context.Books.AddRange(records);
+                    context.SaveChanges();
+
+                    return "Books loaded successfully from CSV.";
+                }
+            }
+
+            catch (DbUpdateException dbEx)
+            {
+                return $"EF Core Error: {dbEx.InnerException?.Message ?? dbEx.Message}";
+            }
+            catch (Exception ex)
+            {
+                return $"General Error: {ex.Message}";
+            }
+            
+        }
+
+
+       
+
     }
 }
