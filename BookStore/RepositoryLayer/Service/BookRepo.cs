@@ -145,5 +145,16 @@ namespace RepositoryLayer.Service
             return true;
         }
 
+
+
+        public List<BookEntity> GetBooksSortedByPrice(string order)
+        {
+            return order.ToLower() == "desc"
+                ? context.Books.OrderByDescending(b => b.Price).ToList()
+                : context.Books.OrderBy(b => b.Price).ToList();
+        }
+
+
+
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using RepositoryLayer.Entity;
+using RepositoryLayer.Service;
 
 namespace ManagerLayer.Interface
 {
@@ -18,6 +19,8 @@ namespace ManagerLayer.Interface
         public BookEntity AddBook(BookEntity newBook);
         public bool DeleteBookById(int id);
 
+        public List<BookEntity> GetBooksSortedByPrice(string order);
+        
 
 
 

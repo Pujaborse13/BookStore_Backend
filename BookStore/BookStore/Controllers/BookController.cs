@@ -59,7 +59,7 @@ namespace BookStore.Controllers
 
 
 
-        [HttpGet("{id}")]
+        [HttpGet("get/{id}")]
         [Authorize] 
         public IActionResult GetBookById(int id)
         {
@@ -147,7 +147,7 @@ namespace BookStore.Controllers
 
 
 
-        [HttpDelete("{id}")]
+        [HttpDelete("delete/{id}")]
         [Authorize]
         public IActionResult DeleteBook(int id)
         {
@@ -175,6 +175,25 @@ namespace BookStore.Controllers
                 return StatusCode(500, new ResponseModel<string>{ Success = false,Message = $"Internal server error: {ex.Message}"});
             }
         }
+
+
+
+        [HttpGet("sort/price")]
+        [Authorize] 
+        public IActionResult GetBooksSortedByPrice([FromQuery] string order = "asc")
+        {
+            try
+            {
+                var sortedBooks = bookManager.GetBooksSortedByPrice(order);
+
+                return Ok(new ResponseModel<List<BookEntity>>{Success = true,Message = $"Books sorted by price ({order})",Data = sortedBooks});
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseModel<string>{Success = false,Message = $"Internal server error: {ex.Message}"});
+            }
+        }
+
 
 
     }

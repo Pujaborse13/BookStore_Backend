@@ -50,5 +50,10 @@ namespace ManagerLayer.Service
             return bookRepo.DeleteBookById(id);
         }
 
+        public List<BookEntity> GetBooksSortedByPrice(string order)
+        {
+            return bookRepo.GetBooksSortedByPrice(order);
+        }
+
     }
 }
