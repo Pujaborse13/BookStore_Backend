@@ -83,6 +83,41 @@ namespace BookStore.Controllers
         }
 
 
+        [HttpPut("update/{id}")]
+        [Authorize] 
+        public IActionResult UpdateBook(int id, [FromBody] BookEntity updatedBook)
+        {
+            try
+            {
+                var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var role = jwtTokenHelper.ExtractRoleFromJwt(token);
+
+                if (role == null || role.ToLower() != "admin")
+                {
+                    return Unauthorized(new ResponseModel<string>{Success = false,
+                        Message = "Unauthorized: Only admins can update books"});
+                }
+
+                var result = bookManager.UpdateBookById(id, updatedBook);
+
+                if (result == null)
+                {
+                    return NotFound(new ResponseModel<BookEntity>{Success = false,Message = $"No book found with ID {id}"});
+                }
+
+                return Ok(new ResponseModel<BookEntity>{Success = true,Message = "Book updated successfully",Data = result});
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = $"Internal server error: {ex.Message}"
+                });
+            }
+        }
+
+
 
 
     }

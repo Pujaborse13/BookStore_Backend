@@ -40,10 +40,6 @@ namespace RepositoryLayer.Service
 
             try
             {
-                //string relativePath = Path.Combine("RepositoryLayer", "Helper", "BooksConverted.csv");
-                //string basePath = AppDomain.CurrentDomain.BaseDirectory;
-                //string fullPath = Path.GetFullPath(Path.Combine(basePath, relativePath));
-
                 string basePath = AppDomain.CurrentDomain.BaseDirectory;
                 string relativePath = @"..\..\..\..\RepositoryLayer\Helper\books.csv";
 
@@ -106,8 +102,23 @@ namespace RepositoryLayer.Service
             return context.Books.FirstOrDefault(b => b.Id == id);
         }
 
+        public BookEntity UpdateBookById(int bookId, BookEntity updatedBook)
+        {
+            var book = context.Books.FirstOrDefault(b => b.Id == bookId);
+            if (book == null) 
+                return null;
 
+            book.BookName = updatedBook.BookName;
+            book.Author = updatedBook.Author;
+            book.Description = updatedBook.Description;
+            book.Price = updatedBook.Price;
+            book.DiscountPrice = updatedBook.DiscountPrice;
+            book.Quantity = updatedBook.Quantity;
+            book.BookImage = updatedBook.BookImage;
+            book.UpdatedAt = DateTime.Now;
 
-
+            context.SaveChanges();
+            return book;
+        }
     }
 }

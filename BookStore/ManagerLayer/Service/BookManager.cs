@@ -33,6 +33,11 @@ namespace ManagerLayer.Service
             return bookRepo.GetBookById(id);
         }
 
+        public BookEntity UpdateBookById(int bookId, BookEntity updatedBook)
+        {
+            return bookRepo.UpdateBookById(bookId, updatedBook);
+        }
+
 
 
     }

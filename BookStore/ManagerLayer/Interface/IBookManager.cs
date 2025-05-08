@@ -13,6 +13,9 @@ namespace ManagerLayer.Interface
 
         public BookEntity GetBookById(int id);
 
+        public BookEntity UpdateBookById(int bookId, BookEntity updatedBook);
+
+
 
 
 
