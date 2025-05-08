@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using RepositoryLayer.Entity;
 using RepositoryLayer.Helper;
-using RepositoryLayer.Models;
 
 
 using Microsoft.AspNetCore.Authorization;
@@ -40,8 +39,12 @@ namespace BookStore.Controllers
         //httplocal/api/Users/Reg
         [HttpPost]
         [Route("user-registration")]
-        public IActionResult Register(RegistrationModel model)
+        public IActionResult Register([FromBody] RegistrationModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var check = userManager.CheckEmail(model.Email);
 
             if (check)

@@ -36,8 +36,12 @@ namespace BookStore.Controllers
         //httplocal/api/Users/Reg
         [HttpPost]
         [Route("admin-registration")]
-        public IActionResult Register(RegistrationModel model)
+        public IActionResult Register([FromBody] RegistrationModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var check = adminManager.CheckEmail(model.Email);
 
             if (check)
