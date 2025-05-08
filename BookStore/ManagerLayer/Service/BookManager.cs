@@ -21,7 +21,14 @@ namespace ManagerLayer.Service
             return bookRepo.LoadBooksFromCsv(token);
         }
 
+        public List<BookEntity> GetAllBooks()
+        {
+            return bookRepo.GetAllBooks();
+        }
+
 
        
+
+
     }
 }

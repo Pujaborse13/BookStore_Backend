@@ -86,7 +86,24 @@ namespace RepositoryLayer.Service
         }
 
 
+        public List<BookEntity> GetAllBooks()
+        {
+            try
+            {
+                return context.Books.ToList();
+            }
+            catch (Exception ex)
+            {
+                return new List<BookEntity>();
+            }
+
+
+        }
+
+
+
        
+
 
     }
 }

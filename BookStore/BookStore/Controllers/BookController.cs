@@ -37,5 +37,19 @@ namespace BookStore.Controllers
         }
 
 
+        [HttpGet("all")]
+        [Authorize]
+
+        public IActionResult GetAllBooks()
+        {
+            var books = bookManager.GetAllBooks();
+            return Ok(books);
+        }
+
+
+
+        
+
+
     }
 }
