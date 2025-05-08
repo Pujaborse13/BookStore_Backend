@@ -11,6 +11,7 @@ namespace RepositoryLayer.Context
        public BookStoreDBContext(DbContextOptions option) : base(option) { }
        public DbSet<UserEntity> Users { get; set; }
        public DbSet<AdminEntity> Admins { get; set; }
+        public DbSet<BookEntity> Books { get; set; }
 
 
     }
