@@ -45,5 +45,10 @@ namespace ManagerLayer.Service
         }
 
 
+        public bool DeleteBookById(int id)
+        {
+            return bookRepo.DeleteBookById(id);
+        }
+
     }
 }

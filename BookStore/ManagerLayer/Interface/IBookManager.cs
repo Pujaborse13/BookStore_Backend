@@ -16,6 +16,8 @@ namespace ManagerLayer.Interface
         public BookEntity UpdateBookById(int bookId, BookEntity updatedBook);
 
         public BookEntity AddBook(BookEntity newBook);
+        public bool DeleteBookById(int id);
+
 
 
 

@@ -132,31 +132,50 @@ namespace BookStore.Controllers
 
                 if (role == null || role.ToLower() != "admin")
                 {
-                    return Unauthorized(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = "Only admins are allowed to add books"
-                    });
+                    return Unauthorized(new ResponseModel<string>{ Success = false,Message = "Only admins are allowed to add books"});
                 }
 
                 var result = bookManager.AddBook(newBook);
 
-                return Ok(new ResponseModel<BookEntity>
-                {
-                    Success = true,
-                    Message = "Book added successfully",
-                    Data = result
-                });
+                return Ok(new ResponseModel<BookEntity>{Success = true,Message = "Book added successfully",Data = result});
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ResponseModel<string>
-                {
-                    Success = false,
-                    Message = $"Internal server error: {ex.Message}"
-                });
+                return StatusCode(500, new ResponseModel<string>{Success = false,Message = $"Internal server error: {ex.Message}"});
             }
         }
+
+
+
+        [HttpDelete("{id}")]
+        [Authorize]
+        public IActionResult DeleteBook(int id)
+        {
+            try
+            {
+                var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var role = jwtTokenHelper.ExtractRoleFromJwt(token);
+
+                if (role == null || role.ToLower() != "admin")
+                {
+                    return Unauthorized(new ResponseModel<string>{Success = false,Message = "Only admins can delete books"});
+                }
+
+                var success = bookManager.DeleteBookById(id);
+
+                if (!success)
+                {
+                    return NotFound(new ResponseModel<string>{Success = false, Message = $"No book found with ID {id}"});
+                }
+
+                return Ok(new ResponseModel<string>{Success = true,Message = "Book deleted successfully"});
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseModel<string>{ Success = false,Message = $"Internal server error: {ex.Message}"});
+            }
+        }
+
 
     }
 }

@@ -133,5 +133,17 @@ namespace RepositoryLayer.Service
             return newBook;
         }
 
+
+        public bool DeleteBookById(int id)
+        {
+            var book = context.Books.FirstOrDefault(b => b.Id == id);
+            if (book == null) 
+                return false;
+
+            context.Books.Remove(book);
+            context.SaveChanges();
+            return true;
+        }
+
     }
 }
