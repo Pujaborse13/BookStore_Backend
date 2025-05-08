@@ -41,6 +41,7 @@ namespace BookStore
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+           
             services.AddDbContext<BookStoreDBContext>(options =>
                 options.UseSqlServer(Configuration["ConnectionStrings:DBConn"]));
 

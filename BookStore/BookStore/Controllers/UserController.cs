@@ -16,8 +16,8 @@ using System.Linq;
 
 namespace BookStore.Controllers
 {
-    //[Route("api/[controller]")]
-    //[ApiController]
+    [ApiController]
+    [Route("api/users")]
     public class UserController : ControllerBase
     {
 
@@ -32,51 +32,47 @@ namespace BookStore.Controllers
             this.jwtTokenHelper = jwtTokenHelper;
             this.context = context;
 
-
         }
 
 
-        //httplocal/api/Users/Reg
-        [HttpPost]
-        [Route("user-registration")]
+        [HttpPost("register")]
         public IActionResult Register([FromBody] RegistrationModel model)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
-            }
-            var check = userManager.CheckEmail(model.Email);
+                var check = userManager.CheckEmail(model.Email);
 
-            if (check)
-            {
-                return BadRequest(new ResponseModel<UserEntity> { Success = false, Message = "Registration Fails " });
-            }
-
-            else
-            {
-                var result = userManager.Register(model);
-      
-
-                if (result != null)
+                if (check)
                 {
-                    return Ok(new ResponseModel<UserEntity> { Success = true, Message = "Register Successfully", Data = result });
-
+                    return BadRequest(new ResponseModel<UserEntity> { Success = false, Message = "Registration Fails " });
                 }
-                return BadRequest(new ResponseModel<UserEntity> { Success = false, Message = "Register Fail", Data = result });
+
+                else
+                {
+                    var result = userManager.Register(model);
+                    if (result != null)
+                    {
+                        return Ok(new ResponseModel<UserEntity> { Success = true, Message = "Register Successfully", Data = result });
+
+                    }
+                    return BadRequest(new ResponseModel<UserEntity> { Success = false, Message = "Register Fail", Data = result });
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseModel<string> { Success = false, Message = $"Internal server error: {ex.Message}" });
+
             }
 
         }
 
 
+        [HttpPost("login")]
 
-        [HttpPost]
-        [Route("user-login")]
         public IActionResult Login(LoginModel model)
         {
             var tokenResponse = userManager.Login(model);
-
-            //var user = userManager.Login(model);
-            //if (user != null)
 
             if (tokenResponse != null)
             {
@@ -87,8 +83,8 @@ namespace BookStore.Controllers
 
 
         
-        [HttpPost]
-        [Route("user-forgot-password")]
+      
+        [HttpPost("forgot-password")]
         public IActionResult ForgotPassword(string Email)
         {
             try
@@ -108,7 +104,7 @@ namespace BookStore.Controllers
                 }
             }
             catch (Exception ex){
-                throw ex;
+                return StatusCode(500, new ResponseModel<string> { Success = false, Message = $"Internal server error: {ex.Message}" });
 
             }
 
@@ -116,9 +112,8 @@ namespace BookStore.Controllers
         }
 
 
-       // [Authorize]
-        [HttpPost]
-        [Route("user-reset-password")]
+       
+        [HttpPost("reset-password")]
         public ActionResult RestPassword(ResetPasswordModel reset)
         {
             try
@@ -137,46 +132,48 @@ namespace BookStore.Controllers
 
             catch (Exception ex)
             {
-                throw ex;
+                return StatusCode(500, new ResponseModel<string> { Success = false, Message = $"Login failed: {ex.Message}" });
+
             }
         }
 
 
-        [HttpPost]
-        [Route("refresh-token")]
+
+        [HttpPost("refresh-token")]
         public IActionResult RefreshToken([FromBody] RefreshTokenRequestModel request)
         {
-            if (request == null || string.IsNullOrEmpty(request.RefreshToken))
+            try
             {
-                return BadRequest(new { message = "Invalid client request" });
+                if (request == null || string.IsNullOrEmpty(request.RefreshToken))
+                {
+                    return BadRequest(new { message = "Invalid client request" });
+                }
+
+                var user = context.Users.FirstOrDefault(u => u.RefreshToken == request.RefreshToken);
+
+                if (user == null || user.RefreshTokenExpiryTime <= DateTime.Now)
+                {
+                    return Unauthorized(new { message = "Invalid refresh token" });
+                }
+
+                var newAccessToken = jwtTokenHelper.GenerateToken(user.Email, user.UserId, user.Role);
+                var newRefreshToken = jwtTokenHelper.GenerateRefreshToken();
+
+                user.RefreshToken = newRefreshToken;
+                user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
+                context.SaveChanges();
+
+                return Ok(new
+                {
+                    AccessToken = newAccessToken,
+                    RefreshToken = newRefreshToken
+                });
+             }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseModel<string> { Success = false, Message = $"Error refreshing token: {ex.Message}" });
             }
-
-            var user = context.Users.FirstOrDefault(u => u.RefreshToken == request.RefreshToken);
-
-            if (user == null || user.RefreshTokenExpiryTime <= DateTime.Now)
-            {
-                return Unauthorized(new { message = "Invalid refresh token" });
-            }
-
-            var newAccessToken = jwtTokenHelper.GenerateToken(user.Email, user.UserId, user.Role);
-            var newRefreshToken = jwtTokenHelper.GenerateRefreshToken();
-
-            user.RefreshToken = newRefreshToken;
-            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
-            context.SaveChanges();
-
-            return Ok(new
-            {
-                AccessToken = newAccessToken,
-                RefreshToken = newRefreshToken
-            });
         }
-
-
-
-
-
-
 
 
     }
