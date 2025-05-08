@@ -120,5 +120,18 @@ namespace RepositoryLayer.Service
             context.SaveChanges();
             return book;
         }
+
+
+        public BookEntity AddBook(BookEntity newBook)
+        {
+            newBook.CreatedAt = DateTime.Now;
+            newBook.UpdatedAt = DateTime.Now;
+
+            context.Books.Add(newBook);
+            context.SaveChanges();
+
+            return newBook;
+        }
+
     }
 }

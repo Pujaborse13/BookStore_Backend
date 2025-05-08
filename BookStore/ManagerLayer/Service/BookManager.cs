@@ -39,6 +39,11 @@ namespace ManagerLayer.Service
         }
 
 
+        public BookEntity AddBook(BookEntity newBook)
+        {
+            return bookRepo.AddBook(newBook);
+        }
+
 
     }
 }

@@ -12,6 +12,11 @@ namespace RepositoryLayer.Interface
         public BookEntity GetBookById(int id);
         public BookEntity UpdateBookById(int bookId, BookEntity updatedBook);
 
+        public BookEntity AddBook(BookEntity newBook);
+
+
+
+
 
 
 

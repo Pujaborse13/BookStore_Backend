@@ -120,5 +120,43 @@ namespace BookStore.Controllers
 
 
 
+
+        [HttpPost("add")]
+        [Authorize]
+        public IActionResult AddBook([FromBody] BookEntity newBook)
+        {
+            try
+            {
+                var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var role = jwtTokenHelper.ExtractRoleFromJwt(token);
+
+                if (role == null || role.ToLower() != "admin")
+                {
+                    return Unauthorized(new ResponseModel<string>
+                    {
+                        Success = false,
+                        Message = "Only admins are allowed to add books"
+                    });
+                }
+
+                var result = bookManager.AddBook(newBook);
+
+                return Ok(new ResponseModel<BookEntity>
+                {
+                    Success = true,
+                    Message = "Book added successfully",
+                    Data = result
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = $"Internal server error: {ex.Message}"
+                });
+            }
+        }
+
     }
 }
