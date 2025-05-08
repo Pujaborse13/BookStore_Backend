@@ -27,7 +27,12 @@ namespace ManagerLayer.Service
         }
 
 
-       
+
+        public BookEntity GetBookById(int id)
+        {
+            return bookRepo.GetBookById(id);
+        }
+
 
 
     }

@@ -11,6 +11,8 @@ namespace ManagerLayer.Interface
 
         public List<BookEntity> GetAllBooks();
 
+        public BookEntity GetBookById(int id);
+
 
 
 

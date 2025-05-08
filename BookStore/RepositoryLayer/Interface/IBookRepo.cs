@@ -9,6 +9,8 @@ namespace RepositoryLayer.Interface
     {
         public string LoadBooksFromCsv(string token);
         public List<BookEntity> GetAllBooks();
+        public BookEntity GetBookById(int id);
+
 
 
 

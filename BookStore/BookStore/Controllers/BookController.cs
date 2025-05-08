@@ -1,8 +1,12 @@
-﻿using ManagerLayer.Interface;
+﻿using System;
+using System.Collections.Generic;
+using ManagerLayer.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RepositoryLayer.Context;
+using RepositoryLayer.Entity;
 using RepositoryLayer.Helper;
+using RepositoryLayer.Models;
 
 namespace BookStore.Controllers
 {
@@ -39,16 +43,46 @@ namespace BookStore.Controllers
 
         [HttpGet("all")]
         [Authorize]
-
         public IActionResult GetAllBooks()
         {
-            var books = bookManager.GetAllBooks();
-            return Ok(books);
+            try
+            {
+                var books = bookManager.GetAllBooks();
+
+                return Ok(new ResponseModel<List<BookEntity>>{Success = true,Message = "Books retrieved successfully",Data = books});
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseModel<string>{Success = false,Message = $"Internal server error: {ex.Message}"});
+            }
         }
 
 
 
-        
+        [HttpGet("{id}")]
+        [Authorize] 
+        public IActionResult GetBookById(int id)
+        {
+            try
+            {
+                var result = bookManager.GetBookById(id);
+
+                if (result != null)
+                {
+                  return Ok(new ResponseModel<BookEntity> {Success = true,Message = "Book retrieved successfully", Data = result});
+                }
+                else
+                {
+                    return NotFound(new ResponseModel<BookEntity>{Success = false,Message = $"No book found with ID {id}",Data = null});
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseModel<string>{Success = false,Message = $"Internal server error: {ex.Message}"});
+            }
+        }
+
+
 
 
     }

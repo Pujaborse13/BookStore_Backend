@@ -101,8 +101,12 @@ namespace RepositoryLayer.Service
         }
 
 
+        public BookEntity GetBookById(int id)
+        {
+            return context.Books.FirstOrDefault(b => b.Id == id);
+        }
 
-       
+
 
 
     }
