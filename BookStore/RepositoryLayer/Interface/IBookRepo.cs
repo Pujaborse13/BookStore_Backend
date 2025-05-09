@@ -15,6 +15,8 @@ namespace RepositoryLayer.Interface
         public bool DeleteBookById(int id);
         public List<BookEntity> GetBooksSortedByPrice(string order);
          public List<BookEntity> SearchBooksByAuthor(string authorName);
+        public List<BookEntity> SortBooksByPriceAscending();
+
 
 
 

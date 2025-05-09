@@ -162,6 +162,11 @@ namespace RepositoryLayer.Service
                           .ToList();
         }
 
+        public List<BookEntity> SortBooksByPriceAscending()
+        {
+            return context.Books.OrderBy(b => b.Price).ToList();
+        }
+
 
 
     }

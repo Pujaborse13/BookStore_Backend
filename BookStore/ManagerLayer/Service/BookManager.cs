@@ -61,6 +61,10 @@ namespace ManagerLayer.Service
         }
 
 
+        public List<BookEntity> SortBooksByPriceAscending()
+        {
+            return bookRepo.SortBooksByPriceAscending();
+        }
 
 
     }

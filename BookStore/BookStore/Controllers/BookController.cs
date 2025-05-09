@@ -214,6 +214,25 @@ namespace BookStore.Controllers
         }
 
 
+        [HttpGet("sortbookbypriceasc")]
+        [Authorize]
+        public IActionResult GetBooksByPriceAscending()
+        {
+            try
+            {
+                var books = bookManager.SortBooksByPriceAscending();
+
+                return Ok(new ResponseModel<List<BookEntity>>{Success = true,
+                        Message = "Books sorted by price in ascending order",
+                    Data = books});
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseModel<string>{Success = false,
+                    Message = $"Internal server error: {ex.Message}"});
+            }
+        }
+
 
 
 
