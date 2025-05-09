@@ -155,6 +155,14 @@ namespace RepositoryLayer.Service
         }
 
 
+        public List<BookEntity> SearchBooksByAuthor(string authorName)
+        {
+            return context.Books
+                          .Where(b => b.Author != null && b.Author.ToLower().Contains(authorName.ToLower()))
+                          .ToList();
+        }
+
+
 
     }
 }

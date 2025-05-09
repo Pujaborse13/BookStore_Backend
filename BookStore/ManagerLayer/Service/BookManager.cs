@@ -55,5 +55,13 @@ namespace ManagerLayer.Service
             return bookRepo.GetBooksSortedByPrice(order);
         }
 
+        public List<BookEntity> SearchBooksByAuthor(string authorName)
+        {
+            return bookRepo.SearchBooksByAuthor(authorName);
+        }
+
+
+
+
     }
 }

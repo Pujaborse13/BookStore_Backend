@@ -20,7 +20,10 @@ namespace ManagerLayer.Interface
         public bool DeleteBookById(int id);
 
         public List<BookEntity> GetBooksSortedByPrice(string order);
-        
+        public List<BookEntity> SearchBooksByAuthor(string authorName);
+
+
+
 
 
 
