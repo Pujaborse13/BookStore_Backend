@@ -167,6 +167,12 @@ namespace RepositoryLayer.Service
             return context.Books.OrderBy(b => b.Price).ToList();
         }
 
+        public List<BookEntity> SortBooksByPriceDescending()
+        {
+            return context.Books.OrderByDescending(b => b.Price).ToList();
+        }
+
+
 
 
     }
