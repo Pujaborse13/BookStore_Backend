@@ -180,21 +180,21 @@ namespace BookStore.Controllers
         }
 
 
-        [HttpGet("price")]
-        [Authorize]
-        public IActionResult GetBooksSortedByPrice([FromQuery] string order = "asc")
-        {
-            try
-            {
-                var sortedBooks = bookManager.GetBooksSortedByPrice(order);
+        //[HttpGet("price")]
+        //[Authorize]
+        //public IActionResult GetBooksSortedByPrice([FromQuery] string order = "asc")
+        //{
+        //    try
+        //    {
+        //        var sortedBooks = bookManager.GetBooksSortedByPrice(order);
 
-                return Ok(new ResponseModel<List<BookEntity>> { Success = true, Message = $"Books sorted by price ({order})", Data = sortedBooks });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new ResponseModel<string> { Success = false, Message = $"Internal server error: {ex.Message}" });
-            }
-        }
+        //        return Ok(new ResponseModel<List<BookEntity>> { Success = true, Message = $"Books sorted by price ({order})", Data = sortedBooks });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, new ResponseModel<string> { Success = false, Message = $"Internal server error: {ex.Message}" });
+        //    }
+        //}
 
 
 

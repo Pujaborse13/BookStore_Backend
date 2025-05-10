@@ -34,7 +34,7 @@ namespace BookStore.Controllers
 
 
 
-        [HttpPost("register")]
+        [HttpPost]
         public IActionResult Register([FromBody] RegistrationModel model)
         {
             try
