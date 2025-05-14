@@ -31,33 +31,41 @@ namespace BookStore.Controllers
             [HttpPost]
             public IActionResult AddToCart(int bookId)
             {
-                try
+            try
+            {
+                var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+                if (string.IsNullOrWhiteSpace(token))
                 {
-                    var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                    return Unauthorized(new { message = "Token is missing or invalid" });
+                }
 
-                    if (string.IsNullOrWhiteSpace(token))
-                    {
-                        return Unauthorized(new { message = "Token is missing or invalid" });
-                    }
-
-              
 
                 var cartItem = cartManager.AddToCart(token, bookId);
 
 
-                if (cartItem == null)
-                    {
-                        return BadRequest(new { message = "Could not add to cart. Possible reasons: invalid token, book/user not found, or only users have access admin can't add cart" });
-                    }
+                //if (cartItem == null)
+                //{
+                //    return BadRequest(new { message = "Could not add to cart. Possible reasons: invalid token, book/user not found, or only users have access admin can't add cart" });
+                //}
 
-                    return Ok(new
-                    {
-                        message = "Book added to cart successfully.", data = cartItem});
-                }
-                catch (Exception ex)
+                return Ok(new
                 {
-                    return StatusCode(500, new { message = $"An unexpected error occurred: {ex.Message}" });
-                }
+                    message = "Book added to cart successfully.", data = cartItem });
+            }
+
+            catch (UnauthorizedAccessException ex)
+            {
+                return Forbid(ex.Message); 
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message }); 
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"An unexpected error occurred: {ex.Message}" });
+            }
             }
 
 

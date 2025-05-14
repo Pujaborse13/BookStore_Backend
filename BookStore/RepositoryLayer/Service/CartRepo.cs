@@ -25,29 +25,24 @@ namespace RepositoryLayer.Service
 
         public CartModel AddToCart(string token, int bookId)
         {
-            try
-            {
-                if (string.IsNullOrEmpty(token))
-                    return null;
 
-                var role = jwtTokenHelper.ExtractRoleFromJwt(token);
-               // var userIdStr = jwtTokenHelper.ExtractUserIdFromJwt(token);
+            if (string.IsNullOrWhiteSpace(token))
+                throw new UnauthorizedAccessException("Authorization token is missing.");
 
-                int userId = jwtTokenHelper.ExtractUserIdFromJwt(token);
+            var role = jwtTokenHelper.ExtractRoleFromJwt(token);
+            int userId = jwtTokenHelper.ExtractUserIdFromJwt(token);
 
                 if (role.ToLower() != "user")
-                    return null;
-
-                //if (!int.TryParse(userIdStr, out int userId))
-                //    return null;
-
+                    throw new UnauthorizedAccessException("Only users can add to cart. Admins are not allowed.");
+               
                 var book = context.Books.FirstOrDefault(b => b.Id == bookId);
                 if (book == null)
-                    return null;
+                    throw new ArgumentException($"Book with ID {bookId} not found.");
 
                 var user = context.Users.FirstOrDefault(u => u.UserId == userId);
                 if (user == null)
-                    return null;
+                    throw new ArgumentException($"User with ID {userId} not found.");
+                    
 
                 var existingCartItem = context.Cart
                     .FirstOrDefault(c => c.CustomerId == userId && c.BookId == bookId && !c.IsPurchased);
@@ -89,11 +84,7 @@ namespace RepositoryLayer.Service
 
                 };
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error in AddToCart: {ex.Message}");
-                return null;
-            }
+            
         }
     }
 
@@ -103,4 +94,3 @@ namespace RepositoryLayer.Service
 
 
 
-}
