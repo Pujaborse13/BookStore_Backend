@@ -37,6 +37,10 @@ namespace ManagerLayer.Service
         }
 
 
+        public string DeleteFromCartIfQuantityZero(string token, int bookId)
+        { 
+            return cartRepo.DeleteFromCartIfQuantityZero(token, bookId);
+        }
 
 
 

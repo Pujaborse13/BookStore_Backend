@@ -137,6 +137,35 @@ namespace BookStore.Controllers
         }
 
 
+        [HttpDelete("{bookId}")]
+        public IActionResult DeleteCartItem(int bookId)
+        {
+            try
+            {
+                var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+                if (string.IsNullOrEmpty(token))
+                    return Unauthorized("Authorization token is missing.");
+
+                var result = cartManager.DeleteFromCartIfQuantityZero(token, bookId);
+
+                if (result.Contains("Unauthorized"))
+                    return Unauthorized(result);
+                else if (result.Contains("not found"))
+                    return NotFound(result);
+                else if (result.Contains("not zero"))
+                    return BadRequest(result);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+
 
 
     }

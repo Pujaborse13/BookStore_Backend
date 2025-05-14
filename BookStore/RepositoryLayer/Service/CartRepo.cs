@@ -195,7 +195,7 @@ namespace RepositoryLayer.Service
                     {
                         context.Cart.Remove(cartItem);
                         context.SaveChanges();
-                        return null; // Item removed
+                        return null; 
                     }
                 }
                 else
@@ -226,9 +226,44 @@ namespace RepositoryLayer.Service
         }
 
 
+        public string DeleteFromCartIfQuantityZero(string token, int bookId)
+        {
 
+            try
+            {
+                var role = jwtTokenHelper.ExtractRoleFromJwt(token);
+                var userId = jwtTokenHelper.ExtractUserIdFromJwt(token);
+
+                if (string.IsNullOrEmpty(role) || role.ToLower() != "user")
+                    return "Unauthorized. Only users can delete from cart.";
+
+                var cartItem = context.Cart.FirstOrDefault(c => c.BookId == bookId && c.CustomerId == userId);
+
+                if (cartItem == null)
+                    return "Cart item not found.";
+
+                //if (cartItem.Quantity != 0)
+                //    return "Item quantity is not zero. Cannot delete.";
+
+                context.Cart.Remove(cartItem);
+                context.SaveChanges();
+
+                return "Cart item deleted successfully.";
+            }
+
+            catch (Exception ex)
+            {
+
+                return $"An error occurred while deleting the cart item: {ex.Message}";
+            }
+        }
 
     }
+
+
+
+
+    
 }
     
 
