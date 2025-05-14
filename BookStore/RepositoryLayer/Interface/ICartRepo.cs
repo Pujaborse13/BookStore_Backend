@@ -8,6 +8,7 @@ namespace RepositoryLayer.Interface
     public interface ICartRepo
     {
         public CartModel AddToCart(string token, int bookId);
+        public CartResponseModel GetCartDetails(string token);
 
     }
 }

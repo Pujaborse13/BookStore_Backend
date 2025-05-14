@@ -26,7 +26,9 @@ namespace ManagerLayer.Service
                  return cartRepo.AddToCart(token, bookId);
         }
 
-
-
+        public CartResponseModel GetCartDetails(string token)
+        {
+            return  cartRepo.GetCartDetails(token);
+        }
     }
 }

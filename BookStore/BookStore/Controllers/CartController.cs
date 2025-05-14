@@ -42,17 +42,10 @@ namespace BookStore.Controllers
 
 
                 var cartItem = cartManager.AddToCart(token, bookId);
-
-
-                //if (cartItem == null)
-                //{
-                //    return BadRequest(new { message = "Could not add to cart. Possible reasons: invalid token, book/user not found, or only users have access admin can't add cart" });
-                //}
-
                 return Ok(new
                 {
                     message = "Book added to cart successfully.", data = cartItem });
-            }
+                }
 
             catch (UnauthorizedAccessException ex)
             {
@@ -69,8 +62,45 @@ namespace BookStore.Controllers
             }
 
 
+        [HttpGet]
+        public IActionResult GetCart()
+        {
+            try
+            {
+                var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                if (string.IsNullOrEmpty(token))
+                {
+                    return Unauthorized(new ResponseModel<string>{Success = false,Message = "Authorization token is missing.",Data = null});
+                }
 
+                var response = cartManager.GetCartDetails(token);
 
+                if (!response.IsSuccess)
+                {
+                    if (response.Message.Contains("users"))
+                    {
+                        return Unauthorized(new ResponseModel<string>{Success = false,Message = response.Message,Data = null});
+                    }
+                    else if (response.Message.Contains("empty") || response.Message.Contains("not found"))
+                    {
+                        return NotFound(new ResponseModel<string>{Success = false,Message = response.Message,Data = null});
+                    }
+                    else
+                    {
+                        return BadRequest(new ResponseModel<string>{Success = false,Message = response.Message,Data = null});
+                    }
+                }
 
+                return Ok(new ResponseModel<CartSummeryModel>{Success = true,Message = response.Message,Data = response.Data});
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseModel<string>{Success = false,Message = $"Internal server error: {ex.Message}",Data = null});
+            }
         }
+
+
+
+
     }
+}
