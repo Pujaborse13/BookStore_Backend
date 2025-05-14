@@ -20,8 +20,8 @@ namespace RepositoryLayer.Entity
             public int BookId { get; set; }  // FK to Book
 
             public int Quantity { get; set; }
-
-            public Decimal SinglUnitPrice { get; set; }
+        [Column(TypeName = "decimal(18,2)")]
+        public Decimal SinglUnitPrice { get; set; }
 
             public bool IsPurchased { get; set; } = false;
 

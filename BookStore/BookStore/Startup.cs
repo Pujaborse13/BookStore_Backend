@@ -57,6 +57,8 @@ namespace BookStore
             services.AddTransient<IBookRepo, BookRepo>();
             services.AddTransient<IBookManager, BookManager>();
 
+            services.AddTransient<ICartRepo, CartRepo>();
+            services.AddTransient<ICartManager, CartManager>();
 
 
             //Swagger for API Documentation

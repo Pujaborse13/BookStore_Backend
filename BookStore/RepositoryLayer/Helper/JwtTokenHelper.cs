@@ -13,7 +13,6 @@ namespace RepositoryLayer.Helper
 {
     public class JwtTokenHelper
     {
-        private readonly IUserRepo userRepo;
         private readonly IConfiguration configuration;
 
 
@@ -59,6 +58,8 @@ namespace RepositoryLayer.Helper
             var jwtToken = tokenHandler.ReadJwtToken(token);
 
             var roleClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "role")?.Value;
+
+
             
             Console.WriteLine($"Extracted role: {roleClaim}");
 
@@ -69,6 +70,28 @@ namespace RepositoryLayer.Helper
 
             return roleClaim;
         }
+
+
+        public int ExtractUserIdFromJwt(string token)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var jwtToken = tokenHandler.ReadJwtToken(token);
+
+            var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "UserID")?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                throw new InvalidOperationException("User ID not found in token.");
+            }
+
+            if (int.TryParse(userIdClaim, out int userId))
+            {
+                return userId;
+            }
+
+            throw new InvalidOperationException("Invalid User ID format in token.");
+        }
+
 
 
     }
