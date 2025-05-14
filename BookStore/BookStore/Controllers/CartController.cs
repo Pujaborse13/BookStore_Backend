@@ -81,10 +81,12 @@ namespace BookStore.Controllers
                     {
                         return Unauthorized(new ResponseModel<string>{Success = false,Message = response.Message,Data = null});
                     }
+
                     else if (response.Message.Contains("empty") || response.Message.Contains("not found"))
                     {
                         return NotFound(new ResponseModel<string>{Success = false,Message = response.Message,Data = null});
                     }
+
                     else
                     {
                         return BadRequest(new ResponseModel<string>{Success = false,Message = response.Message,Data = null});
@@ -96,6 +98,41 @@ namespace BookStore.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, new ResponseModel<string>{Success = false,Message = $"Internal server error: {ex.Message}",Data = null});
+            }
+        }
+
+
+        [HttpPut("updatequantity")]
+        [Authorize]
+        public IActionResult UpdateCartQuantity(int bookId, string action)
+        {
+            try
+            {
+                var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+                if (string.IsNullOrWhiteSpace(token))
+                    return Unauthorized(new ResponseModel<string>{Success = false,Message = "Authorization token is missing."});
+
+                var result = cartManager.UpdateCartQuantity(token, bookId, action);
+
+                if (result == null)
+                {
+                    return Ok(new ResponseModel<string>{Success = true,Message = "Cart item removed as quantity became zero."});
+                }
+
+                return Ok(new ResponseModel<CartModel>{Success = true,Message = $"Cart updated successfully",Data = result});
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Forbid(ex.Message);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new ResponseModel<string>{Success = false,Message = ex.Message});
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseModel<string>{Success = false,Message = $"Internal server error: {ex.Message}"});
             }
         }
 

@@ -10,6 +10,8 @@ namespace ManagerLayer.Interface
         public CartModel AddToCart(string token, int bookId);
         public CartResponseModel GetCartDetails(string token);
 
+        public CartModel UpdateCartQuantity(string token, int bookId, string action);
+
 
     }
 }

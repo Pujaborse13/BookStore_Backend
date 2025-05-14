@@ -129,8 +129,7 @@ namespace RepositoryLayer.Service
                     Price = c.cart.Quantity * c.cart.SinglUnitPrice
                 }).ToList();
 
-                return new CartResponseModel
-                {
+                return new CartResponseModel{
                     IsSuccess = true,
                     Message = "Cart fetched successfully.",
                     Data = new CartSummeryModel
@@ -157,6 +156,76 @@ namespace RepositoryLayer.Service
                 };
             }
         }
+
+
+        public CartModel UpdateCartQuantity(string token, int bookId, string action)
+        {
+            try
+            {
+                int userId = jwtTokenHelper.ExtractUserIdFromJwt(token);
+                string role = jwtTokenHelper.ExtractRoleFromJwt(token);
+
+                if (role.ToLower() != "user")
+                    throw new UnauthorizedAccessException("Only users can update the cart.");
+
+                var user = context.Users.FirstOrDefault(u => u.UserId == userId);
+                if (user == null)
+                    throw new ArgumentException($"User with ID {userId} not found.");
+
+                var cartItem = context.Cart.FirstOrDefault(c =>
+                    c.CustomerId == userId && c.BookId == bookId && !c.IsPurchased);
+
+                if (cartItem == null)
+                    throw new ArgumentException("Cart item not found.");
+
+                var book = context.Books.FirstOrDefault(b => b.Id == bookId);
+                if (book == null)
+                    throw new ArgumentException($"Book with ID {bookId} not found.");
+
+
+
+                if (action.ToLower() == "+")
+                {
+                    cartItem.Quantity += 1;
+                }
+                else if (action.ToLower() == "-")
+                {
+                    cartItem.Quantity -= 1;
+                    if (cartItem.Quantity <= 0)
+                    {
+                        context.Cart.Remove(cartItem);
+                        context.SaveChanges();
+                        return null; // Item removed
+                    }
+                }
+                else
+                {
+                    throw new ArgumentException("Invalid action. Use '-' or '+'.");
+                }
+
+                cartItem.SinglUnitPrice = (decimal)book.Price;
+                context.SaveChanges();
+
+                return new CartModel
+                {
+                    CustomerId = userId,
+                    UserFullName = user.FullName,
+                    UserEmail = user.Email,
+                    BookId = bookId,
+                    BookTitle = book.BookName,
+                    Quantity = cartItem.Quantity,
+                    Price = (decimal)(book.Price * cartItem.Quantity),
+                    IsPurchased = false
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error updating cart quantity: {ex.Message}");
+                return null;
+            }
+        }
+
+
 
 
     }

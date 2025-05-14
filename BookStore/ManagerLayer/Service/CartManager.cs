@@ -30,5 +30,15 @@ namespace ManagerLayer.Service
         {
             return  cartRepo.GetCartDetails(token);
         }
+
+        public CartModel UpdateCartQuantity(string token, int bookId, string action)
+        {
+            return cartRepo.UpdateCartQuantity(token, bookId, action);
+        }
+
+
+
+
+
     }
 }
