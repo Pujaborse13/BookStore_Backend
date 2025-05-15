@@ -68,6 +68,7 @@ namespace BookStore.Controllers
             try
             {
                 var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                
                 if (string.IsNullOrEmpty(token))
                 {
                     return Unauthorized(new ResponseModel<string>{Success = false,Message = "Authorization token is missing.",Data = null});
