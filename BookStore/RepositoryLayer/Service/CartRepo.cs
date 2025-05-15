@@ -228,7 +228,6 @@ namespace RepositoryLayer.Service
 
         public string DeleteFromCartIfQuantityZero(string token, int bookId)
         {
-
             try
             {
                 var role = jwtTokenHelper.ExtractRoleFromJwt(token);
@@ -241,9 +240,6 @@ namespace RepositoryLayer.Service
 
                 if (cartItem == null)
                     return "Cart item not found.";
-
-                //if (cartItem.Quantity != 0)
-                //    return "Item quantity is not zero. Cannot delete.";
 
                 context.Cart.Remove(cartItem);
                 context.SaveChanges();

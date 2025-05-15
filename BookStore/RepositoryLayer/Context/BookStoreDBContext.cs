@@ -14,6 +14,8 @@ namespace RepositoryLayer.Context
         public DbSet<BookEntity> Books { get; set; }
         public DbSet<CartEntity> Cart { get; set; }
 
+        public DbSet<WishListEntity> WishList { get; set; }
+
 
 
     }
