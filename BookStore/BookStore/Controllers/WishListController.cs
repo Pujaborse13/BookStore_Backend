@@ -39,31 +39,23 @@ namespace BookStore.Controllers
             }
             catch (UnauthorizedAccessException ex)
             {
-                return Forbid(ex.Message); // 403 Forbidden
+                return Unauthorized(new ResponseModel<string>{Success = false, 
+                    Message = "You are not authorized: " + ex.Message});
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(new ResponseModel<string>
-                {
+                return BadRequest(new ResponseModel<string>{
                     Success = false,
-                    Message = ex.Message
-                });
+                    Message = ex.Message});
             }
             catch (InvalidOperationException ex)
             {
-                return Conflict(new ResponseModel<string>  // 409 Conflict
-                {
-                    Success = false,
-                    Message = ex.Message
-                });
+                 // 409 Conflict
+                return Conflict(new ResponseModel<string>{Success = false,Message = ex.Message});
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ResponseModel<string>
-                {
-                    Success = false,
-                    Message = $"Internal server error: {ex.Message}"
-                });
+                return StatusCode(500, new ResponseModel<string>{Success = false,Message = $"Internal server error: {ex.Message}"});
             }
         }
 
