@@ -184,11 +184,11 @@ namespace RepositoryLayer.Service
 
 
 
-                if (action.ToLower() == "+")
+                if (action.ToLower() == "inc")
                 {
                     cartItem.Quantity += 1;
                 }
-                else if (action.ToLower() == "-")
+                else if (action.ToLower() == "dec")
                 {
                     cartItem.Quantity -= 1;
                     if (cartItem.Quantity <= 0)
@@ -200,7 +200,7 @@ namespace RepositoryLayer.Service
                 }
                 else
                 {
-                    throw new ArgumentException("Invalid action. Use '-' or '+'.");
+                    throw new ArgumentException("Invalid action. Use 'inc' or 'dec'.");
                 }
 
                 cartItem.SinglUnitPrice = (decimal)book.Price;
