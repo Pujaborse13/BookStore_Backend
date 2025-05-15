@@ -59,5 +59,59 @@ namespace BookStore.Controllers
             }
         }
 
+
+
+
+        [HttpGet]
+        [Authorize]
+        public IActionResult GetWishListDetails()
+        {
+            try
+            {
+                var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+                if (string.IsNullOrWhiteSpace(token))
+                {
+                    return Unauthorized(new ResponseModel<string>
+                    {
+                        Success = false,
+                        Message = "Authorization token is missing.",
+                        Data = null
+                    });
+                }
+
+                var response = wishListManager.GetWishListDetails(token);
+
+                if (!response.IsSuccess)
+                {
+                    if (response.Message.Contains("users"))
+                        return Unauthorized(new ResponseModel<string> { Success = false, Message = response.Message });
+
+                    if (response.Message.Contains("empty") || response.Message.Contains("not found"))
+                        return NotFound(new ResponseModel<string> { Success = false, Message = response.Message });
+
+                    return BadRequest(new ResponseModel<string> { Success = false, Message = response.Message });
+                }
+
+                return Ok(new ResponseModel<WishListSummeryModel>
+                {
+                    Success = true,
+                    Message = response.Message,
+                    Data = response.Data
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = $"Internal server error: {ex.Message}"
+                });
+            }
+        }
+
+
+
+
     }
 }

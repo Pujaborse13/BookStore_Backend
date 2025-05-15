@@ -71,8 +71,65 @@ namespace RepositoryLayer.Service
             };
         }
 
+        public WishListResponseModel GetWishListDetails(string token)
+        {
+            try
+            {
+                int userId = jwtTokenHelper.ExtractUserIdFromJwt(token);
+                string role = jwtTokenHelper.ExtractRoleFromJwt(token);
+
+                if (role.ToLower() != "user")
+                    return new WishListResponseModel { IsSuccess = false, Message = "Only users are allowed to access the wishlist." };
+
+                var user = context.Users.FirstOrDefault(u => u.UserId == userId);
+                if (user == null)
+                    return new WishListResponseModel { IsSuccess = false, Message = "User not found." };
+
+                var wishlistItems = context.WishList
+                    .Where(c => c.AddedBy == userId)
+                    .Include(c => c.BookEntity)
+                    .ToList();
+
+                if (!wishlistItems.Any())
+                    return new WishListResponseModel { IsSuccess = false, Message = "wishlist is empty or not found." };
+
+                var wishlistList = wishlistItems.Select(c => new WishlListItemModel
+                {
+                    BookId = c.BookId,
+                    BookName = c.BookEntity.BookName,
+                    Author = c.BookEntity.Author,
+                    Description = c.BookEntity.Description,
+                    Price = c.BookEntity.Price,
+                    DiscountPrice = c.BookEntity.DiscountPrice,
+                    //Quantity = c.BookEntity.Quantity,
+                    BookImage = c.BookEntity.BookImage
 
 
+                }).ToList();
+
+                return new WishListResponseModel
+                {
+                    IsSuccess = true,
+                    Message = "wishlist fetched successfully.",
+                    Data = new WishListSummeryModel
+                    {
+                        Items = wishlistList,
+
+                        User = new UserDetailsModel
+                        {
+                            UserId = user.UserId,
+                            Email = user.Email,
+                            FullName = user.FullName,
+                        }
+                    }
+                };
+            }
+            catch (Exception ex)
+            {
+                return new WishListResponseModel { IsSuccess = false, Message = $"Internal error: {ex.Message}" };
+            }
+        }
 
     }
 }
+

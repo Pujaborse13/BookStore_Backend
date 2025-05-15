@@ -23,5 +23,13 @@ namespace ManagerLayer.Service
         {
             return wishListRepo.AddToWishList(token, bookId);
         }
+
+        public WishListResponseModel GetWishListDetails(string token)
+        { 
+            return wishListRepo.GetWishListDetails(token);
+
+        
+        }
+
     }
 }

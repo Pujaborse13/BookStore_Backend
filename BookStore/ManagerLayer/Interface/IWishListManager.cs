@@ -9,6 +9,12 @@ namespace ManagerLayer.Interface
     {
         public WishListModel AddToWishList(string token, int bookId);
 
+        public WishListResponseModel GetWishListDetails(string token);
+
+
+
+
+
 
 
     }

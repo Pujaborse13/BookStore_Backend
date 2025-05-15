@@ -12,10 +12,10 @@ namespace RepositoryLayer.Entity
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int WishListId{ get; set; }
 
-        [ForeignKey("Users")]
+        [ForeignKey("UserEntity")]
         public int AddedBy { get; set; }  // FK to User
 
-        [ForeignKey("Book")]
+        [ForeignKey("BookEntity")]
         public int BookId { get; set; }  // FK to Book
 
 
