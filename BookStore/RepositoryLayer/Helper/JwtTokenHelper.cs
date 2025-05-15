@@ -24,6 +24,7 @@ namespace RepositoryLayer.Helper
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+            
             var claims = new[]
             {
                 new Claim("EmailID",email),

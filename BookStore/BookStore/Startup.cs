@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using RepositoryLayer.Helper;
+using Microsoft.AspNetCore.Http;
 
 
 
@@ -59,6 +60,9 @@ namespace BookStore
 
             services.AddTransient<ICartRepo, CartRepo>();
             services.AddTransient<ICartManager, CartManager>();
+
+            services.AddTransient<IWishListRepo, WishListRepo>();
+            services.AddTransient<IWishListManager, WishListManager>();
 
 
             //Swagger for API Documentation
@@ -111,6 +115,24 @@ namespace BookStore
                         ValidAudience = Configuration["Jwt:Audience"],
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
                         
+                    };
+
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnChallenge = context =>
+                        {
+                            context.HandleResponse();
+                            context.Response.StatusCode = 401;
+                            context.Response.ContentType = "application/json";
+
+                            var json = System.Text.Json.JsonSerializer.Serialize(new
+                            {
+                                success = false,
+                                message = "You are not logged in or Authorization token is missing. Please login ! "
+                            });
+
+                            return context.Response.WriteAsync(json);
+                        }
                     };
 
                 });

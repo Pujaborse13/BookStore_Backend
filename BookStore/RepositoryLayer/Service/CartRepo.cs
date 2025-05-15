@@ -30,8 +30,8 @@ namespace RepositoryLayer.Service
             if (string.IsNullOrWhiteSpace(token))
                 throw new UnauthorizedAccessException("Authorization token is missing.");
 
-            var role = jwtTokenHelper.ExtractRoleFromJwt(token);
-            int userId = jwtTokenHelper.ExtractUserIdFromJwt(token);
+                var role = jwtTokenHelper.ExtractRoleFromJwt(token);
+                int userId = jwtTokenHelper.ExtractUserIdFromJwt(token);
 
                 if (role.ToLower() != "user")
                     throw new UnauthorizedAccessException("Only users can add to cart. Admins are not allowed.");
@@ -43,13 +43,15 @@ namespace RepositoryLayer.Service
                 var user = context.Users.FirstOrDefault(u => u.UserId == userId);
                 if (user == null)
                     throw new ArgumentException($"User with ID {userId} not found.");
-                    
 
+
+                //Check if book is already in user's cart
                 var existingCartItem = context.Cart
-                    .FirstOrDefault(c => c.CustomerId == userId && c.BookId == bookId && !c.IsPurchased);
+                                      .FirstOrDefault(c => c.CustomerId == userId && c.BookId == bookId && !c.IsPurchased);
 
+                //Update Existing Cart or add new cart entry
                 if (existingCartItem != null)
-                {
+                    {
                     existingCartItem.Quantity += 1;
                     existingCartItem.SinglUnitPrice = (decimal)book.Price;
                     context.Cart.Update(existingCartItem);
@@ -57,12 +59,12 @@ namespace RepositoryLayer.Service
                 else
                 {
                     var newCart = new CartEntity
-                    {
+                        {
                         CustomerId = userId,
                         BookId = bookId,
                         Quantity = 1,
                         SinglUnitPrice = (decimal)book.Price,
-                        IsPurchased = false
+                        IsPurchased = false 
                     };
                     context.Cart.Add(newCart);
                     existingCartItem = newCart;
@@ -70,10 +72,12 @@ namespace RepositoryLayer.Service
 
                 context.SaveChanges();
 
+
                 return new CartModel
                 {
                     CustomerId = userId,
                     BookId = bookId,
+
                     Quantity = existingCartItem != null ? existingCartItem.Quantity : 1,
                     Price = existingCartItem != null
                         ? existingCartItem.SinglUnitPrice * existingCartItem.Quantity

@@ -1,0 +1,71 @@
+﻿using System;
+using ManagerLayer.Interface;
+using ManagerLayer.Service;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using RepositoryLayer.Models;
+
+namespace BookStore.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class WishListController : ControllerBase
+    {
+
+        private readonly IWishListManager wishListManager;
+
+        public WishListController(IWishListManager wishListManager)
+        {
+            this.wishListManager = wishListManager;
+        }
+
+        [HttpPost]
+        [Authorize]
+        public IActionResult AddToWishList(int bookId)
+        {
+            try
+            {
+                var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+                var wishlistItem = wishListManager.AddToWishList(token, bookId);
+
+                return Ok(new ResponseModel<WishListModel>
+                {
+                    Success = true,
+                    Message = "Book added to wishlist successfully.",
+                    Data = wishlistItem
+                });
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Forbid(ex.Message); // 403 Forbidden
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = ex.Message
+                });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(new ResponseModel<string>  // 409 Conflict
+                {
+                    Success = false,
+                    Message = ex.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = $"Internal server error: {ex.Message}"
+                });
+            }
+        }
+
+    }
+}
