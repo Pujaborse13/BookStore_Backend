@@ -130,6 +130,39 @@ namespace RepositoryLayer.Service
             }
         }
 
+        public string RemoveFromWishlist(string token, int bookId)
+        {
+            try
+            {
+                var role = jwtTokenHelper.ExtractRoleFromJwt(token);
+                var userId = jwtTokenHelper.ExtractUserIdFromJwt(token);
+
+                if (string.IsNullOrEmpty(role) || role.ToLower() != "user")
+                    return "Unauthorized. Only users can delete from wishlist.";
+
+                var wishlistItem = context.WishList.FirstOrDefault(c => c.BookId == bookId && c.AddedBy == userId);
+
+                if (wishlistItem == null)
+                    return "wishlist item not found.";
+
+
+                context.WishList.Remove(wishlistItem);
+                context.SaveChanges();
+
+                return "wishlist item deleted successfully.";
+            }
+
+            catch (Exception ex)
+            {
+
+                return $"An error occurred while deleting the wishlist item: {ex.Message}";
+            }
+
+
+
+        }
+
     }
 }
+
 

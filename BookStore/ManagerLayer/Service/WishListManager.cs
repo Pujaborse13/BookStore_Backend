@@ -27,9 +27,14 @@ namespace ManagerLayer.Service
         public WishListResponseModel GetWishListDetails(string token)
         { 
             return wishListRepo.GetWishListDetails(token);
-
-        
         }
+
+
+        public string RemoveFromWishlist(string token, int bookId)
+        {
+            return wishListRepo.RemoveFromWishlist(token, bookId);
+        }
+
 
     }
 }

@@ -10,7 +10,11 @@ namespace RepositoryLayer.Interface
         public WishListModel AddToWishList(string token, int bookId);
         public WishListResponseModel GetWishListDetails(string token);
 
+        public string RemoveFromWishlist(string token, int bookId);
+        
 
 
+
+
+        }
     }
-}

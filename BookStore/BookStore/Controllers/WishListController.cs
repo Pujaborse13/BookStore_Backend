@@ -113,5 +113,57 @@ namespace BookStore.Controllers
 
 
 
+        [HttpDelete]
+        [Authorize]
+        public IActionResult RemoveFromWishList(int bookId)
+        {
+            try
+            {
+                var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+                //if (string.IsNullOrWhiteSpace(token))
+                //{
+                //    return Unauthorized(new ResponseModel<string>{
+                //        Success = false,
+                //        Message = "Authorization token is missing.",
+                //        Data = null
+                //    });
+                //}
+
+                var result = wishListManager.RemoveFromWishlist(token, bookId);
+
+                if (result.Contains("Unauthorized"))
+                {
+                    return Unauthorized(new ResponseModel<string>
+                    {
+                        Success = false,
+                        Message = result,
+                        Data = null
+                    });
+                }
+
+                if (result.Contains("not found"))
+                {
+                    return NotFound(new ResponseModel<string>{Success = false,Message = result,Data = null});
+                }
+
+                if (result.Contains("not zero"))
+                {
+                    return BadRequest(new ResponseModel<string>{Success = false,Message = result,Data = null});
+                }
+
+                return Ok(new ResponseModel<string>{Success = true,Message = result,Data = null});
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseModel<string>{Success = false,Message = $"Internal server error: {ex.Message}",
+                    Data = null});
+            }
+        }
+
+
+
+
+
     }
 }

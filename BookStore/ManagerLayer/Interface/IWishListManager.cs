@@ -11,6 +11,9 @@ namespace ManagerLayer.Interface
 
         public WishListResponseModel GetWishListDetails(string token);
 
+        public string RemoveFromWishlist(string token, int bookId);
+
+
 
 
 
