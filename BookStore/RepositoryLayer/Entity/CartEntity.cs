@@ -13,10 +13,10 @@ namespace RepositoryLayer.Entity
             [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
             public int CartId { get; set; }
 
-            [ForeignKey("Users")]
+            [ForeignKey("UserEntity")]
             public int CustomerId { get; set; }  // FK to User
 
-            [ForeignKey("Book")]
+            [ForeignKey("BookEntity")]
             public int BookId { get; set; }  // FK to Book
 
             public int Quantity { get; set; }
