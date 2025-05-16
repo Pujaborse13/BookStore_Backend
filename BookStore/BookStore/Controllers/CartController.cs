@@ -10,7 +10,7 @@ using RepositoryLayer.Models;
 
 namespace BookStore.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/cart")]
     [ApiController]
     public class CartController : ControllerBase
     {
