@@ -62,6 +62,42 @@ namespace RepositoryLayer.Service
                 Type = customer.Type
             };
         }
+
+        public List<CustomerDetailsResponseModel> GetAllCustomerDetails(string token)
+        {
+            string role = jwtTokenHelper.ExtractRoleFromJwt(token);
+
+            if (!string.Equals(role, "User", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new UnauthorizedAccessException("Only Users can access customer details.");
+            }
+
+            var customers = context.CustomerDetails
+                .Select(c => new CustomerDetailsResponseModel
+                {
+                    Id = c.Id,
+                    UserId = c.UserId,
+                    FullName = c.FullName,
+                    Mobile = c.Mobile,
+                    Address = c.Address,
+                    City = c.City,
+                    State = c.State,
+                    Type = c.Type
+                })
+                .ToList();
+
+            return customers;
+        }
+
+
+
+
+
+
+
+
+
+
     }
 
 

@@ -8,6 +8,9 @@ namespace ManagerLayer.Interface
     public interface ICustomerDetailsManager
     {
         public CustomerDetailsModel AddCustomerDetails(CustomerDetailsModel model, string token);
+        public List<CustomerDetailsResponseModel> GetAllCustomerDetails(string token);
+
+
 
     }
 }

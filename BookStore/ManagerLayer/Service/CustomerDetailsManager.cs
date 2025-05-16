@@ -21,5 +21,12 @@ namespace ManagerLayer.Service
         {
             return customerDetailsRepo.AddCustomerDetails(model, token);
         }
+
+        public List<CustomerDetailsResponseModel> GetAllCustomerDetails(string token)
+        { 
+        
+            return customerDetailsRepo.GetAllCustomerDetails(token);
+        }
+
     }
 }
