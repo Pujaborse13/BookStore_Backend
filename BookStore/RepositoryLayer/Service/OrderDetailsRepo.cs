@@ -25,7 +25,6 @@ namespace RepositoryLayer.Service
 
         public OrderModel PlaceOrder(string token)
         {
-            // Extract user info from token
             var userId = jwtTokenHelper.ExtractUserIdFromJwt(token);
             var role = jwtTokenHelper.ExtractRoleFromJwt(token);
 
@@ -46,6 +45,19 @@ namespace RepositoryLayer.Service
 
             foreach (var item in cartItems)
             {
+                var book = item.BookEntity;
+
+                // Check stock availability
+                if (book.Quantity < item.Quantity)
+                {
+                    throw new InvalidOperationException(
+                        $"Not enough quantity for book '{book.BookName}'. " +
+                        $"Available: {book.Quantity}, Requested: {item.Quantity}");
+                }
+
+                // Reduce book stock
+                book.Quantity -= item.Quantity;
+
                 var totalPrice = item.SinglUnitPrice * item.Quantity;
 
                 var order = new OrderDetailsEntity
@@ -57,18 +69,20 @@ namespace RepositoryLayer.Service
                     OrderDate = DateTime.UtcNow
                 };
 
+                // Add order to DB
                 context.OrderDetails.Add(order);
-                context.SaveChanges(); // Save to get OrderId populated
+                context.SaveChanges(); 
 
+                //return after order place
                 var response = new OrderResponseModel
                 {
                     OrderId = order.OrderId,
-                    OrderedBy = userId,
+                    UserId = userId,
                     UserFullName = item.UserEntity.FullName,
                     UserEmail = item.UserEntity.Email,
                     BookId = item.BookId,
-                    BookName = item.BookEntity.BookName,
-                    Author = item.BookEntity.Author,
+                    BookName = book.BookName,
+                    Author = book.Author,
                     Price = totalPrice,
                     Quantity = item.Quantity,
                     OrderDate = order.OrderDate
@@ -87,6 +101,7 @@ namespace RepositoryLayer.Service
                 Orders = orderResponses
             };
         }
+
 
 
     }

@@ -7,7 +7,7 @@ namespace RepositoryLayer.Models
     public class OrderResponseModel
     {
         public int OrderId { get; set; }
-        public int OrderedBy { get; set; }
+        public int UserId { get; set; }
         public string UserFullName { get; set; }
         public string UserEmail { get; set; }
         public int BookId { get; set; }
