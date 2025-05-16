@@ -66,6 +66,9 @@ namespace BookStore
 
             services.AddTransient<ICustomerDetailsManager, CustomerDetailsManager>();
             services.AddTransient<ICustomerDetailsRepo, CustomerDetailsRepo>();
+            
+            services.AddTransient<IOrderDetailsManager, OrderDetailsManager>();
+            services.AddTransient<IOrderDetailsRepo, OrderDetailsRepo>();
 
 
 
