@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RepositoryLayer.Context;
 
 namespace RepositoryLayer.Migrations
 {
     [DbContext(typeof(BookStoreDBContext))]
-    partial class BookStoreDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250515005244_updatedWishlistEntitynew")]
+    partial class updatedWishlistEntitynew
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -174,14 +176,20 @@ namespace RepositoryLayer.Migrations
                     b.Property<int>("AddedBy")
                         .HasColumnType("int");
 
+                    b.Property<int?>("BookEntityId")
+                        .HasColumnType("int");
+
                     b.Property<int>("BookId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UserEntityUserId")
                         .HasColumnType("int");
 
                     b.HasKey("WishListId");
 
-                    b.HasIndex("AddedBy");
+                    b.HasIndex("BookEntityId");
 
-                    b.HasIndex("BookId");
+                    b.HasIndex("UserEntityUserId");
 
                     b.ToTable("WishList");
                 });
@@ -199,17 +207,13 @@ namespace RepositoryLayer.Migrations
 
             modelBuilder.Entity("RepositoryLayer.Entity.WishListEntity", b =>
                 {
-                    b.HasOne("RepositoryLayer.Entity.UserEntity", "UserEntity")
-                        .WithMany()
-                        .HasForeignKey("AddedBy")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("RepositoryLayer.Entity.BookEntity", "BookEntity")
                         .WithMany()
-                        .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("BookEntityId");
+
+                    b.HasOne("RepositoryLayer.Entity.UserEntity", "UserEntity")
+                        .WithMany()
+                        .HasForeignKey("UserEntityUserId");
                 });
 #pragma warning restore 612, 618
         }

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RepositoryLayer.Context;
 
 namespace RepositoryLayer.Migrations
 {
     [DbContext(typeof(BookStoreDBContext))]
-    partial class BookStoreDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250515003852_updatedWishlistEntity")]
+    partial class updatedWishlistEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -164,28 +166,6 @@ namespace RepositoryLayer.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("RepositoryLayer.Entity.WishListEntity", b =>
-                {
-                    b.Property<int>("WishListId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("AddedBy")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BookId")
-                        .HasColumnType("int");
-
-                    b.HasKey("WishListId");
-
-                    b.HasIndex("AddedBy");
-
-                    b.HasIndex("BookId");
-
-                    b.ToTable("WishList");
-                });
-
             modelBuilder.Entity("RepositoryLayer.Entity.CartEntity", b =>
                 {
                     b.HasOne("RepositoryLayer.Entity.BookEntity", "BookEntity")
@@ -195,21 +175,6 @@ namespace RepositoryLayer.Migrations
                     b.HasOne("RepositoryLayer.Entity.UserEntity", "UserEntity")
                         .WithMany()
                         .HasForeignKey("UserEntityUserId");
-                });
-
-            modelBuilder.Entity("RepositoryLayer.Entity.WishListEntity", b =>
-                {
-                    b.HasOne("RepositoryLayer.Entity.UserEntity", "UserEntity")
-                        .WithMany()
-                        .HasForeignKey("AddedBy")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("RepositoryLayer.Entity.BookEntity", "BookEntity")
-                        .WithMany()
-                        .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

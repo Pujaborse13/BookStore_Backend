@@ -109,7 +109,6 @@ namespace RepositoryLayer.Service
 
 
 
-
         //forgot password
         public ForgotPasswordModel ForgotPassword(string Email)
         {
