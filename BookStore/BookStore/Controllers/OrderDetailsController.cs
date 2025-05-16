@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using RepositoryLayer.Context;
 using RepositoryLayer.Helper;
 using RepositoryLayer.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BookStore.Controllers
 {
@@ -28,6 +29,8 @@ namespace BookStore.Controllers
 
 
         [HttpPost("placeorder")]
+        [Authorize]
+
         public IActionResult PlaceOrder()
         {
             try
@@ -84,21 +87,13 @@ namespace BookStore.Controllers
 
 
         [HttpGet("userorders")]
+        [Authorize]
+
         public IActionResult GetUserOrders()
         {
             try
             {
                 string token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-
-                if (string.IsNullOrEmpty(token))
-                {
-                    return BadRequest(new ResponseModel<string>
-                    {
-                        Success = false,
-                        Message = "Authorization token is missing",
-                        Data = null
-                    });
-                }
 
                 var orders = orderDetailsManager.GetOrdersByUser(token);
 
