@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ManagerLayer.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RepositoryLayer.Models;
@@ -24,6 +25,8 @@ namespace BookStore.Controllers
 
 
         [HttpPost]
+        [Authorize]
+
         public IActionResult AddCustomerDetails([FromBody] CustomerDetailsModel model)
         {
             try
@@ -49,6 +52,8 @@ namespace BookStore.Controllers
         }
 
         [HttpGet]
+        [Authorize]
+
         public IActionResult GetAllCustomerDetails()
         {
             try

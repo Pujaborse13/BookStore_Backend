@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RepositoryLayer.Context;
 
 namespace RepositoryLayer.Migrations
 {
     [DbContext(typeof(BookStoreDBContext))]
-    partial class BookStoreDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250516103440_OrderDetailsEntity")]
+    partial class OrderDetailsEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -101,6 +103,9 @@ namespace RepositoryLayer.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int?>("BookEntityId")
+                        .HasColumnType("int");
+
                     b.Property<int>("BookId")
                         .HasColumnType("int");
 
@@ -116,11 +121,14 @@ namespace RepositoryLayer.Migrations
                     b.Property<decimal>("SinglUnitPrice")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int?>("UserEntityUserId")
+                        .HasColumnType("int");
+
                     b.HasKey("CartId");
 
-                    b.HasIndex("BookId");
+                    b.HasIndex("BookEntityId");
 
-                    b.HasIndex("CustomerId");
+                    b.HasIndex("UserEntityUserId");
 
                     b.ToTable("Cart");
                 });
@@ -250,15 +258,11 @@ namespace RepositoryLayer.Migrations
                 {
                     b.HasOne("RepositoryLayer.Entity.BookEntity", "BookEntity")
                         .WithMany()
-                        .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("BookEntityId");
 
                     b.HasOne("RepositoryLayer.Entity.UserEntity", "UserEntity")
                         .WithMany()
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserEntityUserId");
                 });
 
             modelBuilder.Entity("RepositoryLayer.Entity.CustomerDetailsEntity", b =>

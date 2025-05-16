@@ -28,17 +28,19 @@ namespace BookStore.Controllers
         }
 
 
-            [HttpPost]
-            public IActionResult AddToCart(int bookId)
+
+         [HttpPost]
+         [Authorize]
+        public IActionResult AddToCart(int bookId)
             {
             try
             {
                 var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
 
-                if (string.IsNullOrWhiteSpace(token))
-                {
-                    return Unauthorized(new { message = "Token is missing or invalid" });
-                }
+                //if (string.IsNullOrWhiteSpace(token))
+                //{
+                //    return Unauthorized(new { message = "Token is missing or invalid" });
+                //}
 
 
                 var cartItem = cartManager.AddToCart(token, bookId);
@@ -63,16 +65,18 @@ namespace BookStore.Controllers
 
 
         [HttpGet]
+        [Authorize]
+
         public IActionResult GetCart()
         {
             try
             {
                 var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
                 
-                if (string.IsNullOrEmpty(token))
-                {
-                    return Unauthorized(new ResponseModel<string>{Success = false,Message = "Authorization token is missing.",Data = null});
-                }
+                //if (string.IsNullOrEmpty(token))
+                //{
+                //    return Unauthorized(new ResponseModel<string>{Success = false,Message = "Authorization token is missing.",Data = null});
+                //}
 
                 var response = cartManager.GetCartDetails(token);
 
@@ -105,14 +109,15 @@ namespace BookStore.Controllers
 
         [HttpPut("updatequantity")]
         [Authorize]
+
         public IActionResult UpdateCartQuantity(int bookId, string action)
         {
             try
             {
                 var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
 
-                if (string.IsNullOrWhiteSpace(token))
-                    return Unauthorized(new ResponseModel<string>{Success = false,Message = "Authorization token is missing."});
+                //if (string.IsNullOrWhiteSpace(token))
+                //    return Unauthorized(new ResponseModel<string>{Success = false,Message = "Authorization token is missing."});
 
                 var result = cartManager.UpdateCartQuantity(token, bookId, action);
 
@@ -139,14 +144,16 @@ namespace BookStore.Controllers
 
 
         [HttpDelete("{bookId}")]
+        [Authorize]
+
         public IActionResult DeleteCartItem(int bookId)
         {
             try
             {
                 var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
 
-                if (string.IsNullOrEmpty(token))
-                    return Unauthorized("Authorization token is missing.");
+                //if (string.IsNullOrEmpty(token))
+                //    return Unauthorized("Authorization token is missing.");
 
                 var result = cartManager.DeleteFromCartIfQuantityZero(token, bookId);
 
