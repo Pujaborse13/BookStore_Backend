@@ -8,6 +8,9 @@ namespace RepositoryLayer.Interface
     public interface IOrderDetailsRepo
     {
         public OrderModel PlaceOrder(string token);
+        public List<OrderItemResponseModel> GetOrdersByUser(string token);
+
+
 
     }
 }

@@ -103,6 +103,40 @@ namespace RepositoryLayer.Service
         }
 
 
+        public List<OrderItemResponseModel> GetOrdersByUser(string token)
+        {
+            // Extract user info
+            var userId = jwtTokenHelper.ExtractUserIdFromJwt(token);
+            var role = jwtTokenHelper.ExtractRoleFromJwt(token);
+
+            if (!string.Equals(role, "user", StringComparison.OrdinalIgnoreCase))
+                throw new UnauthorizedAccessException("Only users can view orders.");
+
+            // Fetch user orders
+            var orders = context.OrderDetails
+                .Include(o => o.BookEntity)
+                .Where(o => o.UserId == userId)
+                .OrderByDescending(o => o.OrderDate)
+                .ToList();
+
+            if (orders == null || orders.Count == 0)
+                return new List<OrderItemResponseModel>();
+
+            // Map to response model
+            var response = orders.Select(o => new OrderItemResponseModel
+            {
+                BookName = o.BookEntity.BookName,
+                BookImage = o.BookEntity.BookImage,
+                Author = o.BookEntity.Author,
+                Quantity = o.Quantity,
+                PricePerItem = o.TotalPrice / o.Quantity,
+                TotalPrice = o.TotalPrice,
+                OrderDate = o.OrderDate
+            }).ToList();
+
+            return response;
+        }
+
 
     }
 }

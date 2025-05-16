@@ -20,5 +20,11 @@ namespace ManagerLayer.Service
            return orderDetailsRepo.PlaceOrder(token);
         }
 
+        public List<OrderItemResponseModel> GetOrdersByUser(string token)
+        { 
+            return orderDetailsRepo.GetOrdersByUser(token);
+        }
+
+
     }
 }

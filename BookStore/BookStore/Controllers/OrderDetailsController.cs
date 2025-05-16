@@ -83,6 +83,62 @@ namespace BookStore.Controllers
         }
 
 
+        [HttpGet("userorders")]
+        public IActionResult GetUserOrders()
+        {
+            try
+            {
+                string token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+                if (string.IsNullOrEmpty(token))
+                {
+                    return BadRequest(new ResponseModel<string>
+                    {
+                        Success = false,
+                        Message = "Authorization token is missing",
+                        Data = null
+                    });
+                }
+
+                var orders = orderDetailsManager.GetOrdersByUser(token);
+
+                if (orders == null || orders.Count == 0)
+                {
+                    return NotFound(new ResponseModel<string>
+                    {
+                        Success = false,
+                        Message = "No orders found",
+                        Data = null
+                    });
+                }
+
+                return Ok(new ResponseModel<List<OrderItemResponseModel>>
+                {
+                    Success = true,
+                    Message = "Orders fetched successfully.",
+                    Data = orders
+                });
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = ex.Message,
+                    Data = null
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = "Something went wrong while fetching orders.",
+                    Data = ex.Message
+                });
+            }
+        }
+
 
     }
 }
