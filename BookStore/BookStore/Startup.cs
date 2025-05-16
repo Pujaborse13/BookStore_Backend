@@ -64,6 +64,11 @@ namespace BookStore
             services.AddTransient<IWishListRepo, WishListRepo>();
             services.AddTransient<IWishListManager, WishListManager>();
 
+            services.AddTransient<ICustomerDetailsManager, CustomerDetailsManager>();
+            services.AddTransient<ICustomerDetailsRepo, CustomerDetailsRepo>();
+
+
+
 
             //Swagger for API Documentation
             services.AddSwaggerGen(

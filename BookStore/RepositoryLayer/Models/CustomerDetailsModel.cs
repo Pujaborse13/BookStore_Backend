@@ -5,7 +5,7 @@ using System.Text;
 
 namespace RepositoryLayer.Models
 {
-    public  class CustomerDetails
+    public  class CustomerDetailsModel
     {
         [Required(ErrorMessage = "Full Name is required")]
         [StringLength(100, MinimumLength = 2, ErrorMessage = "Full Name must be between 2 and 100 characters")]

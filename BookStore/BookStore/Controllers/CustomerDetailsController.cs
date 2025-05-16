@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
+using ManagerLayer.Interface;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using RepositoryLayer.Models;
 
 namespace BookStore.Controllers
 {
@@ -7,6 +10,44 @@ namespace BookStore.Controllers
     [ApiController]
     public class CustomerDetailsController : ControllerBase
     {
+
+        private readonly ICustomerDetailsManager customerDetailsManager;
+
+
+        public CustomerDetailsController(ICustomerDetailsManager customerDetailsManager)
+        {
+            this.customerDetailsManager = customerDetailsManager;
+
+
+        }
+
+
+        [HttpPost]
+        public IActionResult AddCustomerDetails([FromBody] CustomerDetailsModel model)
+        {
+            try
+            {
+                string token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+                var result = customerDetailsManager.AddCustomerDetails(model, token);
+
+                return Ok(new ResponseModel<CustomerDetailsModel>{
+                    Success = true,Message = "Customer details added successfully.",Data = result});
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new ResponseModel<string>{
+                    Success = false,Message = ex.Message,Data = null});
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseModel<string>
+                {
+                    Success = false,Message = "Customer details not added.",Data = ex.Message});
+            }
+        }
+
+
 
     }
 }
