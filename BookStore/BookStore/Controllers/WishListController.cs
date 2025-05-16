@@ -7,9 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 using RepositoryLayer.Models;
 
 namespace BookStore.Controllers
+
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/wishlist")]
     public class WishListController : ControllerBase
     {
 

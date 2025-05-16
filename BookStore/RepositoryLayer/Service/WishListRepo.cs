@@ -21,7 +21,6 @@ namespace RepositoryLayer.Service
         {
             this.context = context;
             this.jwtTokenHelper = jwtTokenHelper;
-
         }
 
         public WishListModel AddToWishList(string token, int bookId)
@@ -44,6 +43,7 @@ namespace RepositoryLayer.Service
                 throw new ArgumentException($"User with ID {userId} not found.");
 
             var existingItem = context.WishList.FirstOrDefault(c => c.AddedBy == userId && c.BookId == bookId);
+            
             if (existingItem != null)
                 throw new InvalidOperationException("Book already exists in wishlist.");
 
@@ -52,6 +52,7 @@ namespace RepositoryLayer.Service
                 AddedBy = userId,
                 BookId = bookId,
             };
+
             context.WishList.Add(newWishlist);
             context.SaveChanges();
 
@@ -101,7 +102,7 @@ namespace RepositoryLayer.Service
                     Description = c.BookEntity.Description,
                     Price = c.BookEntity.Price,
                     DiscountPrice = c.BookEntity.DiscountPrice,
-                    //Quantity = c.BookEntity.Quantity,
+                    Quantity = c.BookEntity.Quantity,
                     BookImage = c.BookEntity.BookImage
 
 
