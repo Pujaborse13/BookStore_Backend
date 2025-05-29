@@ -4,13 +4,17 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using CsvHelper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 using RepositoryLayer.Context;
 using RepositoryLayer.Entity;
 using RepositoryLayer.Helper;
 using RepositoryLayer.Interface;
+using StackExchange.Redis;
+
 
 namespace RepositoryLayer.Service
 {
@@ -19,12 +23,17 @@ namespace RepositoryLayer.Service
         private readonly BookStoreDBContext context;
         private readonly IConfiguration configuration;
         private readonly JwtTokenHelper jwtTokenHelper;
+        private readonly IConnectionMultiplexer redis;
+        private readonly StackExchange.Redis.IDatabase redisDb;
 
-        public BookRepo(BookStoreDBContext context, IConfiguration configuration, JwtTokenHelper jwtTokenHelper)
+        public BookRepo(BookStoreDBContext context, IConfiguration configuration, JwtTokenHelper jwtTokenHelper, IConnectionMultiplexer redis)
         {
             this.context = context;
             this.configuration = configuration;
             this.jwtTokenHelper = jwtTokenHelper;
+            this.redis = redis;
+            this.redisDb = redis.GetDatabase();
+
 
         }
 
@@ -65,6 +74,7 @@ namespace RepositoryLayer.Service
 
                     context.Books.AddRange(records);
                     context.SaveChanges();
+                    redisDb.KeyDelete("bookstore:allbooks"); // Invalidate cache
 
                     return "Books loaded successfully from CSV.";
                 }
@@ -84,15 +94,35 @@ namespace RepositoryLayer.Service
 
         public List<BookEntity> GetAllBooks()
         {
-            try
+            /* try
+             {
+                 return context.Books.ToList();
+             }
+             catch (Exception ex)
+             {
+                 return new List<BookEntity>();
+             }*/
+            
+            //using radis
+            const string cacheKey = "bookstore:allbooks";
+            string cachedBooks = redisDb.StringGet(cacheKey);  // Check if books are in Redis
+
+            if (!string.IsNullOrEmpty(cachedBooks))
             {
-                return context.Books.ToList();
-            }
-            catch (Exception ex)
-            {
-                return new List<BookEntity>();
+                Console.WriteLine("Data retrieved from Redis cache.");
+
+                return JsonSerializer.Deserialize<List<BookEntity>>(cachedBooks);
             }
 
+             // If not in cache, fetch from DB
+            Console.WriteLine("Data not in Redis. Fetching from database.");
+            var books = context.Books.ToList();   // If not in cache, fetch from DB
+
+            // Cache the result with 30 mins expiry
+            var serializedBooks = JsonSerializer.Serialize(books);
+            redisDb.StringSet(cacheKey, serializedBooks, TimeSpan.FromMinutes(30));
+
+            return books;
 
         }
 
@@ -101,6 +131,9 @@ namespace RepositoryLayer.Service
         {
             return context.Books.FirstOrDefault(b => b.Id == id);
         }
+
+
+
 
         public BookEntity UpdateBookById(int bookId, BookEntity updatedBook)
         {
@@ -118,6 +151,7 @@ namespace RepositoryLayer.Service
             book.UpdatedAt = DateTime.Now;
 
             context.SaveChanges();
+            redisDb.KeyDelete("bookstore:allbooks"); // Invalidate cache
             return book;
         }
 
@@ -129,7 +163,7 @@ namespace RepositoryLayer.Service
 
             context.Books.Add(newBook);
             context.SaveChanges();
-
+            redisDb.KeyDelete("bookstore:allbooks"); // Invalidate cache
             return newBook;
         }
 
@@ -142,6 +176,7 @@ namespace RepositoryLayer.Service
 
             context.Books.Remove(book);
             context.SaveChanges();
+            redisDb.KeyDelete("bookstore:allbooks"); // Invalidate cache
             return true;
         }
 
@@ -164,13 +199,31 @@ namespace RepositoryLayer.Service
 
         public List<BookEntity> SortBooksByPriceAscending()
         {
-            return context.Books.OrderBy(b => b.Price).ToList();
+            return context.Books.OrderBy(b => b.DiscountPrice).ToList();
         }
 
         public List<BookEntity> SortBooksByPriceDescending()
         {
-            return context.Books.OrderByDescending(b => b.Price).ToList();
+            return context.Books.OrderByDescending(b => b.DiscountPrice).ToList();
         }
+
+
+
+        public List<BookEntity> SearchBooks(string searchTerm)
+        {
+            if (string.IsNullOrWhiteSpace(searchTerm))
+                return new List<BookEntity>();
+
+            searchTerm = searchTerm.ToLower();
+
+            return context.Books
+                .Where(b =>
+                    (b.Author != null && b.Author.ToLower().Contains(searchTerm)) ||
+                    (b.BookName != null && b.BookName.ToLower().Contains(searchTerm))
+                )
+                .ToList();
+        }
+
 
 
 
