@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using ManagerLayer.Interface;
 using ManagerLayer.Service;
 using Microsoft.AspNetCore.Authorization;
@@ -82,25 +83,31 @@ namespace BookStore.Controllers
                 }
 
                 var response = wishListManager.GetWishListDetails(token);
-
                 if (!response.IsSuccess)
                 {
                     if (response.Message.Contains("users"))
+                    {
                         return Unauthorized(new ResponseModel<string> { Success = false, Message = response.Message });
+                    }
 
+                    // Handle empty wishlist as a valid case (200 OK)
                     if (response.Message.Contains("empty") || response.Message.Contains("not found"))
-                        return NotFound(new ResponseModel<string> { Success = false, Message = response.Message });
+                        return Ok(new ResponseModel<WishListSummeryModel>
+                        {
+                            Success = true,
+                            Message = "Your wishlist is empty.",
+                            Data = new WishListSummeryModel
+                            {
+                                Items = new List<WishlListItemModel>(),
+                                User = null 
+                            }
+                        });
 
                     return BadRequest(new ResponseModel<string> { Success = false, Message = response.Message });
                 }
-
-                return Ok(new ResponseModel<WishListSummeryModel>
-                {
-                    Success = true,
-                    Message = response.Message,
-                    Data = response.Data
-                });
+                return Ok(new ResponseModel<WishListSummeryModel>{Success = true,Message = response.Message,Data = response.Data});
             }
+
             catch (Exception ex)
             {
                 return StatusCode(500, new ResponseModel<string>
@@ -114,7 +121,7 @@ namespace BookStore.Controllers
 
 
 
-        [HttpDelete]
+        [HttpDelete("{bookId}")]
         [Authorize]
         public IActionResult RemoveFromWishList(int bookId)
         {
@@ -133,6 +140,7 @@ namespace BookStore.Controllers
 
                 var result = wishListManager.RemoveFromWishlist(token, bookId);
 
+                /*
                 if (result.Contains("Unauthorized"))
                 {
                     return Unauthorized(new ResponseModel<string>
@@ -142,6 +150,7 @@ namespace BookStore.Controllers
                         Data = null
                     });
                 }
+
 
                 if (result.Contains("not found"))
                 {
@@ -154,16 +163,30 @@ namespace BookStore.Controllers
                 }
 
                 return Ok(new ResponseModel<string>{Success = true,Message = result,Data = null});
+            }*/
+
+                //store procedure changes 
+
+                return Ok(new ResponseModel<string>{Success = true,Message = result,Data = null});
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new ResponseModel<string>{Success = false,Message = ex.Message,Data = null});
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new ResponseModel<string>{Success = false,Message = ex.Message,Data = null});
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ResponseModel<string>{Success = false,Message = $"Internal server error: {ex.Message}",
-                    Data = null});
+                return StatusCode(500, new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = $"Internal server error: {ex.Message}",
+                    Data = null
+                });
             }
         }
-
-
-
 
 
     }
