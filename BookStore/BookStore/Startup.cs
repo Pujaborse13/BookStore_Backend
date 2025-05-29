@@ -23,6 +23,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using RepositoryLayer.Helper;
 using Microsoft.AspNetCore.Http;
+using StackExchange.Redis;
 
 
 
@@ -69,9 +70,6 @@ namespace BookStore
             
             services.AddTransient<IOrderDetailsManager, OrderDetailsManager>();
             services.AddTransient<IOrderDetailsRepo, OrderDetailsRepo>();
-
-
-
 
             //Swagger for API Documentation
             services.AddSwaggerGen(
@@ -145,26 +143,50 @@ namespace BookStore
 
                 });
 
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAngularApp",
+                    builder =>
+                    {
+                        builder.WithOrigins("http://localhost:4200")
+                               .AllowAnyHeader()
+                               .AllowAnyMethod() //get,post,put,delete
+                               .AllowCredentials();  // Allow cookies, tokens, etc.
+                    });
+            });
+
+
+            services.AddSingleton<IConnectionMultiplexer>
+                (ConnectionMultiplexer.Connect(Configuration["Redis:ConnectionString"]));
+
+
+            //services.AddStackExchangeRedisCache(options => { options.Configuration = Configuration["RedisCacheUrl"]; });
+
+
+
+
         }
-
-
-
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseMiddleware<BookStore.Middleware.RateLimitingMiddleware>(); //RateLimiter to prevent dos attack
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            app.UseHttpsRedirection();  //redirect http to https 
 
             app.UseRouting();
 
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseCors("AllowAngularApp");
 
 
             app.UseSwagger();
