@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using ManagerLayer.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors.Infrastructure;
@@ -89,7 +90,15 @@ namespace BookStore.Controllers
 
                     else if (response.Message.Contains("empty") || response.Message.Contains("not found"))
                     {
-                        return NotFound(new ResponseModel<string>{Success = false,Message = response.Message,Data = null});
+                        return Ok(new ResponseModel<CartSummeryModel>
+                        {
+                            Success = true,
+                            Message = "Cart is empty.",
+                            Data = new CartSummeryModel
+                            {
+                                Items = new List<CartItemModel>()  
+                            }
+                        });
                     }
 
                     else
@@ -142,7 +151,7 @@ namespace BookStore.Controllers
             }
         }
 
-
+        /*
         [HttpDelete("{bookId}")]
         [Authorize]
 
@@ -171,10 +180,42 @@ namespace BookStore.Controllers
 
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
+        }*/
+
+
+
+
+        [HttpDelete("{bookId}")]
+        [Authorize]
+        public IActionResult DeleteCartItem(int bookId)
+        {
+            try
+            {
+                var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var result = cartManager.DeleteFromCartIfQuantityZero(token, bookId);
+
+                if (result.Contains("Unauthorized"))
+                {
+                    return Unauthorized(new ResponseModel<string>{Success = false,Message = result});
+                }
+                else if (result.Contains("not found"))
+                {
+                    return NotFound(new ResponseModel<string> {Success = false,Message = result});
+                }
+                else if (result.Contains("not zero"))
+                {
+                    return BadRequest(new ResponseModel<string> { Success = false,Message = result});
+                }
+
+                return Ok(new ResponseModel<string>{ Success = true, Message = result});
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseModel<string>{Success = false, Message = $"Internal server error: {ex.Message}"});
+            }
         }
 
 
-
-
     }
+
 }

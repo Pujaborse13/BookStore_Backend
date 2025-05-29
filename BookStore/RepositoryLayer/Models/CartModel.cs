@@ -11,8 +11,9 @@ namespace RepositoryLayer.Models
         //public string UserLastName { get; set; }
         public string UserEmail { get; set; }
         public int BookId { get; set; }
-
+        public string BookImage { get; set; }
         public string BookTitle { get; set; }
+        public string Author { get; set; }
         public int Quantity { get; set; }
         public decimal Price { get; set; }
         public bool IsPurchased { get; set; } = false;

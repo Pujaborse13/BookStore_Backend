@@ -30,7 +30,6 @@ namespace BookStore.Controllers
 
         [HttpPost("placeorder")]
         [Authorize]
-
         public IActionResult PlaceOrder()
         {
             try
@@ -88,7 +87,6 @@ namespace BookStore.Controllers
 
         [HttpGet("userorders")]
         [Authorize]
-
         public IActionResult GetUserOrders()
         {
             try
@@ -96,16 +94,16 @@ namespace BookStore.Controllers
                 string token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
 
                 var orders = orderDetailsManager.GetOrdersByUser(token);
-
                 if (orders == null || orders.Count == 0)
                 {
-                    return NotFound(new ResponseModel<string>
+                    return Ok(new ResponseModel<List<OrderItemResponseModel>>
                     {
                         Success = false,
-                        Message = "No orders found",
-                        Data = null
+                        Message = "You haven't placed any orders yet.",
+                        Data = new List<OrderItemResponseModel>()
                     });
                 }
+
 
                 return Ok(new ResponseModel<List<OrderItemResponseModel>>
                 {

@@ -129,7 +129,10 @@ namespace RepositoryLayer.Service
                 {
                     BookId = c.book.Id,
                     BookName = c.book.BookName,
+                    BookImage = c.book.BookImage,
                     Quantity = c.cart.Quantity,
+                    Author = c.book.Author,
+
                     Price = c.cart.Quantity * c.cart.SinglUnitPrice
                 }).ToList();
 

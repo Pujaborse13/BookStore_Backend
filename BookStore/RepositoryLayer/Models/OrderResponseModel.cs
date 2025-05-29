@@ -15,6 +15,9 @@ namespace RepositoryLayer.Models
         public string Author { get; set; }
         public decimal Price { get; set; }
         public int Quantity { get; set; }
+
         public DateTime OrderDate { get; set; }
+        public decimal PricePerItem { get; set; }
+        public decimal? DiscountPrice { get; set; }
     }
 }

@@ -100,7 +100,8 @@ namespace RepositoryLayer.Service
                 return new TokenResponse
                 {
                     AccessToken = accessToken,
-                    RefreshToken = refreshToken
+                    RefreshToken = refreshToken,
+                    FullName = checkUser.FullName
                 };
                 
             }

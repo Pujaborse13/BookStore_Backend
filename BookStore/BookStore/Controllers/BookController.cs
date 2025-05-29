@@ -271,6 +271,40 @@ namespace BookStore.Controllers
 
 
 
+        [HttpGet("search")]
+        [Authorize]
+        public IActionResult SearchBooksByAuthorOrTitle([FromQuery] string searchTerm)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(searchTerm))
+                {
+                    return BadRequest(new ResponseModel<string>
+                    {
+                        Success = false,
+                        Message = "Search term cannot be empty."
+                    });
+                }
+
+                var books = bookManager.SearchBooks(searchTerm);
+
+                return Ok(new ResponseModel<List<BookEntity>>
+                {
+                    Success = true,
+                    Message = $"Books found for: '{searchTerm}'",
+                    Data = books
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = $"Internal server error: {ex.Message}"
+                });
+            }
+        }
+
 
 
 

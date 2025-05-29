@@ -9,11 +9,14 @@ namespace RepositoryLayer.Models
         public string BookName { get; set; }
         public string BookImage { get; set; }
         public string Author { get; set; }
-        public int Quantity { get; set; }
-        public decimal PricePerItem { get; set; }
-        public decimal TotalPrice { get; set; }
-        public DateTime OrderDate { get; set; }
 
+        public int Quantity { get; set; }
+
+        public decimal OriginalPrice { get; set; }      // MRP
+        public decimal? DiscountPrice { get; set; }     // Discounted price
+
+        public decimal TotalPrice { get; set; }         // DiscountPrice * Quantity
+        public DateTime OrderDate { get; set; }
 
     }
 }

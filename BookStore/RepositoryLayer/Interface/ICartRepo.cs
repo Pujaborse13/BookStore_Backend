@@ -12,9 +12,5 @@ namespace RepositoryLayer.Interface
         public CartModel UpdateCartQuantity(string token, int bookId, string action);
         public string DeleteFromCartIfQuantityZero(string token, int bookId);
 
-
-
-
-
     }
 }
