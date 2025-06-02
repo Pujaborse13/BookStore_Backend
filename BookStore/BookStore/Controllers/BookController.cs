@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using ManagerLayer.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using RepositoryLayer.Context;
 using RepositoryLayer.Entity;
 using RepositoryLayer.Helper;
 using RepositoryLayer.Models;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace BookStore.Controllers
 {
@@ -18,14 +20,18 @@ namespace BookStore.Controllers
         private readonly IBookManager bookManager;
         private readonly JwtTokenHelper jwtTokenHelper;
         private readonly BookStoreDBContext context;
+        private readonly ILogger<BookController> logger;
 
 
-        public BookController(IBookManager bookManager, JwtTokenHelper jwtTokenHelper, BookStoreDBContext context)
+
+
+        public BookController(IBookManager bookManager, JwtTokenHelper jwtTokenHelper, 
+                                BookStoreDBContext context, ILogger<BookController> logger)
         {
             this.bookManager = bookManager;
             this.jwtTokenHelper = jwtTokenHelper;
             this.context = context;
-
+            this.logger = logger;
         }
 
         [HttpPost("loadfromcsv")]
@@ -47,12 +53,15 @@ namespace BookStore.Controllers
         {
             try
             {
+                logger.LogInformation("Fetching all books...");
                 var books = bookManager.GetAllBooks();
 
+                logger.LogInformation("Books fetched successfully. Count: {Count}", books.Count);
                 return Ok(new ResponseModel<List<BookEntity>> { Success = true, Message = "Books retrieved successfully", Data = books });
             }
             catch (Exception ex)
             {
+                logger.LogError(ex, "Error occurred while fetching all books.");
                 return StatusCode(500, new ResponseModel<string> { Success = false, Message = $"Internal server error: {ex.Message}" });
             }
         }
@@ -66,18 +75,21 @@ namespace BookStore.Controllers
             try
             {
                 var result = bookManager.GetBookById(id);
-
                 if (result != null)
                 {
+
+                    logger.LogInformation("Books fetched successfully. Count: {Count}");
                     return Ok(new ResponseModel<BookEntity> { Success = true, Message = "Book retrieved successfully", Data = result });
                 }
                 else
                 {
+                    logger.LogInformation("Book Not found");
                     return NotFound(new ResponseModel<BookEntity> { Success = false, Message = $"No book found with ID {id}", Data = null });
                 }
             }
             catch (Exception ex)
             {
+                logger.LogError(ex, "Error occurred while fetching book.");
                 return StatusCode(500, new ResponseModel<string> { Success = false, Message = $"Internal server error: {ex.Message}" });
             }
         }
@@ -105,13 +117,16 @@ namespace BookStore.Controllers
 
                 if (result == null)
                 {
+                    logger.LogInformation("Book Not found");
                     return NotFound(new ResponseModel<BookEntity> { Success = false, Message = $"No book found with ID {id}" });
                 }
 
+                logger.LogInformation("Book updated successfully");
                 return Ok(new ResponseModel<BookEntity> { Success = true, Message = "Book updated successfully", Data = result });
             }
             catch (Exception ex)
             {
+                logger.LogError(ex, "Error occurred while fetching book.");
                 return StatusCode(500, new ResponseModel<string>
                 {
                     Success = false,
@@ -139,11 +154,13 @@ namespace BookStore.Controllers
                 }
 
                 var result = bookManager.AddBook(newBook);
+                logger.LogInformation("Book added successfully. Title: {Title}", newBook.BookName);
 
                 return Ok(new ResponseModel<BookEntity> { Success = true, Message = "Book added successfully", Data = result });
             }
             catch (Exception ex)
             {
+                logger.LogError(ex, "Error occurred while adding a new book.");
                 return StatusCode(500, new ResponseModel<string> { Success = false, Message = $"Internal server error: {ex.Message}" });
             }
         }
@@ -168,13 +185,16 @@ namespace BookStore.Controllers
 
                 if (!success)
                 {
+                    logger.LogWarning("Attempted to delete book, but no book found with ID {BookId}.", id);
                     return NotFound(new ResponseModel<string> { Success = false, Message = $"No book found with ID {id}" });
                 }
 
+                logger.LogInformation("Book deleted successfully. Book ID: {BookId}", id);
                 return Ok(new ResponseModel<string> { Success = true, Message = "Book deleted successfully" });
             }
             catch (Exception ex)
             {
+                logger.LogError(ex, "Error occurred while deleting book with ID {BookId}.", id);
                 return StatusCode(500, new ResponseModel<string> { Success = false, Message = $"Internal server error: {ex.Message}" });
             }
         }

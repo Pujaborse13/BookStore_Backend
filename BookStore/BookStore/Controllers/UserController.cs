@@ -25,16 +25,18 @@ namespace BookStore.Controllers
         private readonly JwtTokenHelper jwtTokenHelper;
         private readonly BookStoreDBContext context;
         private readonly RabbitMQProducer rabbitMQProducer;
+        private readonly ILogger<UserController> logger;
 
 
 
-        public UserController(IUserManager userManager, JwtTokenHelper jwtTokenHelper , BookStoreDBContext context, RabbitMQProducer rabbitMQProducer)
+        public UserController(IUserManager userManager, JwtTokenHelper jwtTokenHelper , BookStoreDBContext context, RabbitMQProducer rabbitMQProducer, ILogger<UserController> logger)
         {
             this.userManager = userManager;
             this.jwtTokenHelper = jwtTokenHelper;
             this.context = context;
             this.rabbitMQProducer = rabbitMQProducer;
-         
+            this.logger = logger;
+
 
         }
 
@@ -44,27 +46,37 @@ namespace BookStore.Controllers
         {
             try
             {
+                logger.LogInformation("Register endpoint called for Email: {Email}", model.Email);
+
                 var check = userManager.CheckEmail(model.Email);
 
                 if (check)
                 {
+                    logger.LogWarning("Registration failed: Email already exists - {Email}", model.Email);
                     return BadRequest(new ResponseModel<UserEntity> { Success = false, Message = "Registration Fails " });
                 }
 
                 else
                 {
                     var result = userManager.Register(model);
+
+                    HttpContext.Session.SetInt32("UserId", result.UserId); // set Session , logger
+                  
                     if (result != null)
                     {
+
+                        logger.LogInformation("User registered successfully: {Email}", model.Email);
                         return Ok(new ResponseModel<UserEntity> { Success = true, Message = "Register Successfully", Data = result });
 
                     }
+                    logger.LogError("User registration returned null for Email: {Email}", model.Email);
                     return BadRequest(new ResponseModel<UserEntity> { Success = false, Message = "Register Fail", Data = result });
                 }
 
             }
             catch (Exception ex)
             {
+                logger.LogError(ex, "Exception occurred during registration for Email: {Email}", model.Email);
                 return StatusCode(500, new ResponseModel<string> { Success = false, Message = $"Internal server error: {ex.Message}" });
 
             }
@@ -122,13 +134,16 @@ namespace BookStore.Controllers
                 if (userManager.CheckEmail(Email))
                 {
                     ForgotPasswordModel forgotPasswordModel = userManager.ForgotPassword(Email);
-                    
+
+                    //Create RabbitMQ Email Message
                     var message = new RabbitMQEmailModel
                     {
                         ToEmail = forgotPasswordModel.Email,
                         Subject = "Forgot Password",
                         Body = $"Your password reset token is: {forgotPasswordModel.Token}"
                     };
+                    
+
                     rabbitMQProducer.SendMessage(message);
 
                     //Send send = new Send();

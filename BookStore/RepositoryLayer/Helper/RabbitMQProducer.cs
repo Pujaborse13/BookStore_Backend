@@ -20,10 +20,10 @@ namespace RepositoryLayer.Helper
 
         public void SendMessage(RabbitMQEmailModel emailModel)
         {
+            //establish connection and open channel to communicate with queue
             using (var connection = factory.CreateConnection())
             using (var channel = connection.CreateModel())
             {
-
                 channel.QueueDeclare(queue: "emailQueue",
                                      durable: false,
                                      exclusive: false,
@@ -33,7 +33,9 @@ namespace RepositoryLayer.Helper
                 var json = JsonConvert.SerializeObject(emailModel);
                 var body = Encoding.UTF8.GetBytes(json);
 
-                channel.BasicPublish(exchange: "",
+
+                //Publishes the message
+                channel.BasicPublish(exchange: "", //Empty "" means default direct exchange.
                                      routingKey: "emailQueue",
                                      basicProperties: null,
                                      body: body);

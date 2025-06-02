@@ -32,7 +32,7 @@ namespace RepositoryLayer.Service
             this.configuration = configuration;
             this.jwtTokenHelper = jwtTokenHelper;
             this.redis = redis;
-            this.redisDb = redis.GetDatabase()
+            this.redisDb = redis.GetDatabase();
         }
 
 

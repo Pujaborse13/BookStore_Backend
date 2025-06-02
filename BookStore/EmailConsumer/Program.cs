@@ -39,6 +39,7 @@ namespace EmailConsumer
                                      autoDelete: false,
                                      arguments: null);
 
+
                 var consumer = new EventingBasicConsumer(channel);
                 consumer.Received += (model, ea) =>
                 {
@@ -50,6 +51,7 @@ namespace EmailConsumer
                     SendMail(emailModel.ToEmail, emailModel.Subject, emailModel.Body);
                 };
 
+                //Tells RabbitMQ to start consuming messages from "emailQueue".
                 channel.BasicConsume(queue: "emailQueue",
                                      autoAck: true,
                                      consumer: consumer);
