@@ -24,13 +24,17 @@ namespace BookStore.Controllers
         private readonly IUserManager userManager;
         private readonly JwtTokenHelper jwtTokenHelper;
         private readonly BookStoreDBContext context;
+        private readonly RabbitMQProducer rabbitMQProducer;
 
 
-        public UserController(IUserManager userManager, JwtTokenHelper jwtTokenHelper , BookStoreDBContext context)
+
+        public UserController(IUserManager userManager, JwtTokenHelper jwtTokenHelper , BookStoreDBContext context, RabbitMQProducer rabbitMQProducer)
         {
             this.userManager = userManager;
             this.jwtTokenHelper = jwtTokenHelper;
             this.context = context;
+            this.rabbitMQProducer = rabbitMQProducer;
+         
 
         }
 
@@ -82,8 +86,34 @@ namespace BookStore.Controllers
         }
 
 
+
+        /*
+          [HttpPost("forgot-password")]
+          public IActionResult ForgotPassword(string Email)
+          {
+              try
+              {
+                  if (userManager.CheckEmail(Email))
+                  {
+                      ForgotPasswordModel forgotPasswordModel = userManager.ForgotPassword(Email);
+
+                      Send send = new Send();
+                      send.SendMail(forgotPasswordModel.Email, forgotPasswordModel.Token);
+                      return Ok(new ResponseModel<string> { Success = true, Message = "Mail send Sucessfully" });
+                  }
+                  else{
+
+                      return BadRequest(new ResponseModel<string>() { Success = false, Message = "Email not send " });
+
+                  }
+              }
+              catch (Exception ex){
+                  return StatusCode(500, new ResponseModel<string> { Success = false, Message = $"Internal server error: {ex.Message}" });
+
+              }
+          }
+        */
         
-      
         [HttpPost("forgot-password")]
         public IActionResult ForgotPassword(string Email)
         {
@@ -92,18 +122,28 @@ namespace BookStore.Controllers
                 if (userManager.CheckEmail(Email))
                 {
                     ForgotPasswordModel forgotPasswordModel = userManager.ForgotPassword(Email);
+                    
+                    var message = new RabbitMQEmailModel
+                    {
+                        ToEmail = forgotPasswordModel.Email,
+                        Subject = "Forgot Password",
+                        Body = $"Your password reset token is: {forgotPasswordModel.Token}"
+                    };
+                    rabbitMQProducer.SendMessage(message);
 
-                    Send send = new Send();
-                    send.SendMail(forgotPasswordModel.Email, forgotPasswordModel.Token);
+                    //Send send = new Send();
+                    //send.SendMail(forgotPasswordModel.Email, forgotPasswordModel.Token);
                     return Ok(new ResponseModel<string> { Success = true, Message = "Mail send Sucessfully" });
                 }
-                else{
+                else
+                {
 
                     return BadRequest(new ResponseModel<string>() { Success = false, Message = "Email not send " });
 
                 }
             }
-            catch (Exception ex){
+            catch (Exception ex)
+            {
                 return StatusCode(500, new ResponseModel<string> { Success = false, Message = $"Internal server error: {ex.Message}" });
 
             }
@@ -112,7 +152,6 @@ namespace BookStore.Controllers
         }
 
 
-       
         [HttpPost("reset-password")]
         public ActionResult RestPassword(ResetPasswordModel reset)
         {

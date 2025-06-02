@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepositoryLayer", "Reposito
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManagerLayer", "ManagerLayer\ManagerLayer.csproj", "{32178FBD-7B0A-4E78-AE5A-830B0890B15C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailConsumer", "EmailConsumer\EmailConsumer.csproj", "{29542AF1-C329-4BCA-994B-16DEF7E13B87}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{32178FBD-7B0A-4E78-AE5A-830B0890B15C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{32178FBD-7B0A-4E78-AE5A-830B0890B15C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{32178FBD-7B0A-4E78-AE5A-830B0890B15C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29542AF1-C329-4BCA-994B-16DEF7E13B87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29542AF1-C329-4BCA-994B-16DEF7E13B87}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29542AF1-C329-4BCA-994B-16DEF7E13B87}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29542AF1-C329-4BCA-994B-16DEF7E13B87}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

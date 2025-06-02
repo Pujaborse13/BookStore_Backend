@@ -71,6 +71,9 @@ namespace BookStore
             services.AddTransient<IOrderDetailsManager, OrderDetailsManager>();
             services.AddTransient<IOrderDetailsRepo, OrderDetailsRepo>();
 
+            services.AddTransient<RabbitMQProducer>();
+
+
             //Swagger for API Documentation
             services.AddSwaggerGen(
                 option =>

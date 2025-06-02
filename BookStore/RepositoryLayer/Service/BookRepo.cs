@@ -32,9 +32,7 @@ namespace RepositoryLayer.Service
             this.configuration = configuration;
             this.jwtTokenHelper = jwtTokenHelper;
             this.redis = redis;
-            this.redisDb = redis.GetDatabase();
-
-
+            this.redisDb = redis.GetDatabase()
         }
 
 
@@ -90,22 +88,27 @@ namespace RepositoryLayer.Service
             }
             
         }
-
-
+        /*
         public List<BookEntity> GetAllBooks()
         {
-            /* try
+             try
              {
                  return context.Books.ToList();
              }
              catch (Exception ex)
              {
                  return new List<BookEntity>();
-             }*/
-            
+             }
+        }
+        */
+
+        // //using radis
+        public List<BookEntity> GetAllBooks()
+        {
             //using radis
-            const string cacheKey = "bookstore:allbooks";
-            string cachedBooks = redisDb.StringGet(cacheKey);  // Check if books are in Redis
+            const string cacheKey = "bookstore:allbooks";  // key store list of books in Redis.
+            string cachedBooks = redisDb.StringGet(cacheKey); //get the cached value using the cacheKey
+
 
             if (!string.IsNullOrEmpty(cachedBooks))
             {
@@ -114,7 +117,7 @@ namespace RepositoryLayer.Service
                 return JsonSerializer.Deserialize<List<BookEntity>>(cachedBooks);
             }
 
-             // If not in cache, fetch from DB
+            // If not in cache, fetch from DB
             Console.WriteLine("Data not in Redis. Fetching from database.");
             var books = context.Books.ToList();   // If not in cache, fetch from DB
 
@@ -131,9 +134,6 @@ namespace RepositoryLayer.Service
         {
             return context.Books.FirstOrDefault(b => b.Id == id);
         }
-
-
-
 
         public BookEntity UpdateBookById(int bookId, BookEntity updatedBook)
         {
@@ -228,5 +228,5 @@ namespace RepositoryLayer.Service
 
 
 
-    }
+   }
 }
